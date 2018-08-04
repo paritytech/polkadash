@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack --mode development --watch",
-    "build": "webpack --mode production --watch"
+    "build": "webpack --mode production"
   },
   "babel": {
     "presets": [
@@ -35,6 +35,7 @@
     "file-loader": "^1.1.11",
     "isomorphic-fetch": "^2.2.1",
     "oo7": "^0.5.9",
+    "oo7-react": "^0.4.9",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "semantic-ui-css": "^2.3.1",

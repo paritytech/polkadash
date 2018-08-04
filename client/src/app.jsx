@@ -1,8 +1,7 @@
 import oo7 from 'oo7';
 import {Rspan} from 'oo7-react';
 import React from 'react';
-import {Polkadot, ss58_decode, ss58_encode, bytesToHex, pretty, reviver} from './polkadot.js';
-import {AccountIdBond} from './AccountIdBond.jsx';
+import {pretty, reviver} from './polkadot.js';
 
 export class WebSocketBond extends oo7.Bond {
 	constructor(reviver) {

@@ -24,3 +24,8 @@ Open browser
 http://localhost:3000/
 ```
 
+## Run
+
+```
+$ npm start
+```
