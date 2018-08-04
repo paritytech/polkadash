@@ -5,7 +5,6 @@ function serveBonds(servedBonds) {
 	let wss = new WebSocketServer({port: 40510})
 
 	wss.on('connection', function (ws) {
-		console.log('connected');
 		var ready = {};
 		var notReady = [];
 		let dk = []
@@ -13,9 +12,7 @@ function serveBonds(servedBonds) {
 			let b = servedBonds[key]
 			dk.push(b.notify(() => {
 				try {
-					console.log("updating")
 					let s = JSON.stringify(b._ready ? { key, value: b._value } : { key })
-					console.log("sending", s)
 					ws.send(s)
 				}
 				catch (e) {
@@ -31,7 +28,6 @@ function serveBonds(servedBonds) {
 			}
 		})
 		let s = JSON.stringify({ init: true, notReady, ready })
-		console.log("sending", s)
 		ws.send(s)
 	})
 	
