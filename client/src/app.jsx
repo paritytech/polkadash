@@ -50,6 +50,13 @@ export class App extends React.Component {
 				<div>Block Period: <Rspan>{bonds.blockPeriod.map(x => x.number + ' seconds')}</Rspan></div>
 				<div>Limit to become validator: <Rspan>{bonds.validatorLimit.map(pretty)}</Rspan></div>
 			</div></div>
+			<div>Sessions: <div style={{marginLeft: '1em'}}>
+				<div>Remaining: <Rspan>{bonds.blocksRemaining}</Rspan> of <Rspan>{bonds.length}</Rspan></div>
+				<div>Lateness: <Rspan>{bonds.percentLate.map(Math.round)}</Rspan>% of <Rspan>{bonds.brokenPercentLate}</Rspan>%</div>
+				<div>Current Index: <Rspan>{bonds.currentIndex}</Rspan></div>
+				<div>Current Start: <Rspan>{bonds.currentStart.map(d => d.toLocaleString())}</Rspan></div>
+				<div>Last Length Change: <Rspan>{bonds.lastLengthChange}</Rspan></div>
+			</div></div>
 		</div>);
 	}
 }
@@ -57,14 +64,7 @@ export class App extends React.Component {
 		this.pd = new Polkadot;
 		this.who = new oo7.Bond;
 */
-/*			<div>Sessions: <div style={{marginLeft: '1em'}}>
-				<div>Remaining: <Rspan>{this.pd.session.blocksRemaining}</Rspan> of <Rspan>{this.pd.session.length}</Rspan></div>
-				<div>Lateness: <Rspan>{this.pd.session.percentLate.map(Math.round)}</Rspan>% of <Rspan>{this.pd.session.brokenPercentLate}</Rspan>%</div>
-				<div>Current Index: <Rspan>{this.pd.session.currentIndex}</Rspan></div>
-				<div>Current Start: <Rspan>{this.pd.session.currentStart.map(d => d.toLocaleString())}</Rspan></div>
-				<div>Last Length Change: <Rspan>{this.pd.session.lastLengthChange}</Rspan></div>
-			</div></div>
-			<div>Staking: <div style={{marginLeft: '1em'}}>
+/*			<div>Staking: <div style={{marginLeft: '1em'}}>
 				<div>Sessions per era: <Rspan>{this.pd.staking.sessionsPerEra}</Rspan></div>
 				<div>Current era: <Rspan>{this.pd.staking.currentEra}</Rspan></div>
 				<div>Intentions: <Rspan>{this.pd.staking.intentions.map(pretty)}</Rspan></div>

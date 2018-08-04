@@ -4,14 +4,16 @@ let {Polkadot, bytesToHex} = require('./polkadot.js')
 
 var app = express()
 
+let port = 80;
+
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/client/dist/index.html');
 })
 app.get('/bundle.js', function (req, res) {
   res.sendFile(__dirname + '/client/dist/bundle.js');
 })
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+app.listen(port, function () {
+	console.log(`Listening on port ${port}!`)
 })
 
 let polkadot = new Polkadot
@@ -34,5 +36,13 @@ serveBonds({
 	blockPeriod: polkadot.timestamp.blockPeriod,
 	validatorLimit: polkadot.authorities.map(who =>
 		polkadot.staking.balance(who[who.length - 1])
-	)
+	),
+
+	blocksRemaining: polkadot.session.blocksRemaining,
+	length: polkadot.session.length,
+	percentLate: polkadot.session.percentLate,
+	brokenPercentLate: polkadot.session.brokenPercentLate,
+	currentIndex: polkadot.session.currentIndex,
+	currentStart: polkadot.session.currentStart,
+	lastLengthChange: polkadot.session.lastLengthChange
 })
