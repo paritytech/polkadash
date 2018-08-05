@@ -1,0 +1,63 @@
+html,body {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+#app {
+	height: 100%;
+}
+
+#dash {
+	padding: 10px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	align-items: stretch;
+	align-content: flex-start;
+	background-color: #ececec;
+	height: 100%;
+}
+
+.value, .list {
+	padding: 50px;
+	background-color: white;
+	box-shadow: 0px 1px 10px #ccc;
+	border-radius: 3px;
+	margin: 10px;	
+}
+
+.value {
+	width: 320px;
+}
+
+.big {
+	width: 660px;
+}
+
+.label {
+	font-size: 14px;
+	color: #ccc;
+	position: relative;
+	top: -10px;
+}
+
+.value span {
+	font-size: 36px;
+	color: #333;
+}
+
+.validator-balance .AccountId {
+	font-size: 18px;
+	font-family: monospace;
+}
+
+.validator-balance .Balance {
+	font-size: 14px;
+	color: #666;
+	text-align: right;
+}
+
+.validator-balance {
+	margin: 5px;
+}

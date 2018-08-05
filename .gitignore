@@ -44,6 +44,9 @@ jspm_packages
 *.tgz
 
 client/node_modules
-client/dist
+client/dist/*.eot
+client/dist/*.svg
+client/dist/*.ttf
+client/dist/bundle.js
 
 config.json
