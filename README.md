@@ -4,7 +4,7 @@ The Polkadot Dashboard
 
 ## Screenshot
 
-![image](https://user-images.githubusercontent.com/138296/43685489-48767cf6-98b4-11e8-82ea-cefc4f6dd04c.png)
+![image](https://user-images.githubusercontent.com/138296/43687073-a85d38ec-98cf-11e8-9a1f-3e009c07ca04.png)
 
 ## How it works
 
