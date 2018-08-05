@@ -41,7 +41,7 @@ export class App extends React.Component {
 	render() {
 		return (<div>
 			<div>Chain: <div style={{marginLeft: '1em'}}>
-				<div>Height: <Rspan>{bonds.height}</Rspan></div>
+				<div>Height: #<Rspan>{bonds.height.map(pretty)}</Rspan></div>
 				<div>Code: <Rspan>{bonds.codeSize}</Rspan> bytes (<Rspan>{bonds.codeHash}</Rspan>)</div>
 				<div>Authorities:
 					<Rspan>{bonds.authorities.map(pretty)}</Rspan></div>
@@ -51,15 +51,15 @@ export class App extends React.Component {
 				<div>Limit to become validator: <Rspan>{bonds.validatorLimit.map(pretty)}</Rspan></div>
 			</div></div>
 			<div>Sessions: <div style={{marginLeft: '1em'}}>
-				<div>Remaining: <Rspan>{bonds.blocksRemaining}</Rspan> of <Rspan>{bonds.length}</Rspan></div>
+				<div>Remaining: <Rspan>{bonds.blocksRemaining.map(pretty)}</Rspan> of <Rspan>{bonds.length.map(pretty)}</Rspan></div>
 				<div>Lateness: <Rspan>{bonds.percentLate.map(Math.round)}</Rspan>% of <Rspan>{bonds.brokenPercentLate}</Rspan>%</div>
-				<div>Current Index: <Rspan>{bonds.currentIndex}</Rspan></div>
+				<div>Current Index: <Rspan>{bonds.currentIndex.map(pretty)}</Rspan></div>
 				<div>Current Start: <Rspan>{bonds.currentStart.map(d => d.toLocaleString())}</Rspan></div>
-				<div>Last Length Change: <Rspan>{bonds.lastLengthChange}</Rspan></div>
+				<div>Last Length Change: #<Rspan>{bonds.lastLengthChange.map(pretty)}</Rspan></div>
 			</div></div>
 			<div>Staking: <div style={{marginLeft: '1em'}}>
-				<div>Sessions per era: <Rspan>{bonds.sessionsPerEra}</Rspan></div>
-				<div>Current era: <Rspan>{bonds.currentEra}</Rspan></div>
+				<div>Sessions per era: <Rspan>{bonds.sessionsPerEra.map(pretty)}</Rspan></div>
+				<div>Current era: <Rspan>{bonds.currentEra.map(pretty)}</Rspan></div>
 				<div>Intentions: <Rspan>{bonds.intentions.map(pretty)}</Rspan></div>
 			</div></div>
 			<div>Democracy: <div style={{marginLeft: '1em'}}>

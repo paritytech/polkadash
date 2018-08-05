@@ -164,6 +164,9 @@ function stringify(input, type) {
 			return res;
 		}
 		case 'Balance':
+			let res = '' + leToNumber(input.data.slice(0, 16));
+			input.data = input.data.slice(16);
+			return res;
 		case 'BlockNumber': {
 			let res = '' + leToNumber(input.data.slice(0, 8));
 			input.data = input.data.slice(8);
@@ -234,6 +237,8 @@ class Moment extends Date {
 		return { _type: 'Moment', data: this.number }
 	}
 }
+class Balance extends Number { toJSON() { return { _type: 'Balance', data: this+0 } }}
+class BlockNumber extends Number { toJSON() { return { _type: 'BlockNumber', data: this+0 } }}
 class Tuple extends Array { toJSON() { return { _type: 'Tuple', data: this } }}
 class CallProposal extends Object { constructor (isCall) { super(); this.isCall = isCall; } }
 class Proposal extends Object {
@@ -255,6 +260,8 @@ function reviver(key, bland) {
 			case 'Tuple': return new Tuple(bland.data);
 			case 'Proposal': return new Proposal(bland.data);
 			case 'Call': return new Call(bland.data);
+			case 'Balance': return new Balance(bland.data);
+			case 'BlockNumber': return new BlockNumber(bland.data);
 		}
 	}
 	return bland;
@@ -295,12 +302,12 @@ function deslice(input, type) {
 		case 'Balance': {
 			let res = leToNumber(input.data.slice(0, 16));
 			input.data = input.data.slice(16);
-			return res;
+			return new Balance(res);
 		}
 		case 'BlockNumber': {
 			let res = leToNumber(input.data.slice(0, 8));
 			input.data = input.data.slice(8);
-			return res;
+			return new BlockNumber(res);
 		}
 		case 'Moment': {
 			let n = leToNumber(input.data.slice(0, 8));
@@ -359,12 +366,22 @@ function deslice(input, type) {
 	}
 }
 
+const numberWithCommas = (x) => {
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function pretty(expr) {
 	if (expr === null) {
 		return 'null';
 	}
 	if (expr instanceof VoteThreshold) {
 		return 'VoteThreshold.' + expr;
+	}
+	if (expr instanceof Balance) {
+		return numberWithCommas(expr) + ' DOT';
+	}
+	if (expr instanceof BlockNumber) {
+		return numberWithCommas(expr);
 	}
 	if (expr instanceof Hash) {
 		return '0x' + bytesToHex(expr);
@@ -548,7 +565,7 @@ class Polkadot {
 		let head = new TransformBond(() => req('chain_getHead'), [], [new TimeBond])
 		this.head = head;
 		this.header = hashBond => new TransformBond(hash => req('chain_getHeader', [hash]), [hashBond], [new TimeBond]).subscriptable();
-		this.height = this.header(this.head).number;
+		this.height = this.header(this.head).map(h => new BlockNumber(h.number));
 		this.storage = locBond => new TransformBond(loc => req('state_getStorage', ['0x' + toLEHex(XXH.h64(loc.buffer, 0), 8) + toLEHex(XXH.h64(loc.buffer, 1), 8)]), [locBond], [head]);
 		this.code = new TransformBond(() => req('state_getStorage', ['0x' + bytesToHex(stringToBytes(":code"))]).then(hexToBytes), [], [head]);
 		this.codeHash = new TransformBond(() => req('state_getStorageHash', ['0x' + bytesToHex(stringToBytes(":code"))]).then(hexToBytes), [], [head]);
@@ -619,7 +636,7 @@ class Polkadot {
 			);
 
 		this.staking = {
-			balance: storageMap('sta:bal:', r => r ? leToNumber(r) : 0),
+			balance: storageMap('sta:bal:', r => r ? deslice(r, 'T::Balance') : new Balance(0)),
 			currentEra: storageValue('sta:era', r => deslice(r, 'T::BlockNumber')),
 			sessionsPerEra: storageValue('sta:spe', r => deslice(r, 'T::BlockNumber')),
 			intentions: storageValue('sta:wil:', r => r ? deslice(r, 'Vec<AccountId>') : []),
