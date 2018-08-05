@@ -11,14 +11,13 @@ function serveBonds(servedBonds) {
 		Object.keys(servedBonds).forEach(key => {
 			let b = servedBonds[key]
 			dk.push(b.notify(() => {
-				console.log("Updating host")
+				console.log(`Updating host ${ws.url} with ${key}`)
 				try {
 					let s = JSON.stringify(b._ready ? { key, value: b._value } : { key })
 					ws.send(s)
-					console.log("OK")
 				}
 				catch (e) {
-					console.log("Error. Closing")
+					console.log(`Error. Closing ${ws.url}`)
 					if (dk) {
 						Object.keys(servedBonds).forEach((key, i) => {
 							servedBonds[key].unnotify(dk[i])
