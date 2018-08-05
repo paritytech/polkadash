@@ -3,9 +3,16 @@ var serveBonds = require('./ws').serveBonds
 let {Polkadot, bytesToHex} = require('./polkadot.js')
 let {Bond} = require('oo7')
 
+let config = {};
+try {
+	JSON.parse(require('fs').readFileSync(__dirname + '/config.json', 'utf8'))
+} catch (e) {
+	console.log(`Error reading config.json: ${e}. Using defaults`)
+}
+
 var app = express()
 
-let port = 3000;
+let port = config.port || 3000;
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/client/dist/index.html');

@@ -45,3 +45,5 @@ jspm_packages
 
 client/node_modules
 client/dist
+
+config.json
