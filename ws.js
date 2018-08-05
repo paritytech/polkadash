@@ -16,9 +16,13 @@ function serveBonds(servedBonds) {
 					ws.send(s)
 				}
 				catch (e) {
-					Object.keys(servedBonds).forEach((key, i) => {
-						servedBonds[key].unnotify(dk[i])
-					})
+					if (dk) {
+						Object.keys(servedBonds).forEach((key, i) => {
+							servedBonds[key].unnotify(dk[i])
+						})
+						delete dk
+					}
+					ws.close()
 				}
 			}))
 			if (b._ready) {
