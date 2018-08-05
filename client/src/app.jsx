@@ -9,7 +9,7 @@ export class WebSocketBond extends oo7.Bond {
 		this.reviver = reviver
 	}
 	initialise () {
-		this.ws = new WebSocket('ws://localhost:40510')
+		this.ws = new WebSocket(`ws://${new URL(document.location.origin).hostname}:40510`)
 		this.ws.onopen = function () {}
 		let that = this;
 		this.ws.onmessage = function (ev) {
