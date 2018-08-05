@@ -9,26 +9,42 @@ function serveBonds(servedBonds) {
 		let index = count++;
 		var ready = {}
 		var notReady = []
+		let active = true;
 		let dk = []
-		Object.keys(servedBonds).forEach(key => {
-			let b = servedBonds[key]
-			dk.push(b.notify(() => {
-				if (dk) {
-					console.log(`Updating host ${ws.url} (${index}) with ${key}`)
+		let poll = () => {
+			if (active) {
+				console.log(`Updating host ${ws.url} (${index}) with ${key}`)
+				try {
+					let s = JSON.stringify(b._ready ? { key, value: b._value } : { key })
+					ws.send(s)
+				}
+				catch (e) {
+					console.log(`Error. Closing ${ws.url} (${index})`)
+					active = false
+					console.log(`Marked inactive ${index}`)
 					try {
-						let s = JSON.stringify(b._ready ? { key, value: b._value } : { key })
-						ws.send(s)
+						ws.close()
+						console.log(`Closed ${index}`)
 					}
 					catch (e) {
-						console.log(`Error. Closing ${ws.url} (${index})`)
-						Object.keys(servedBonds).forEach((key, i) => {
-							servedBonds[key].unnotify(dk[i])
-						})
-						delete dk
-						ws.close()
+						console.log(`Error closing ${index}`)
 					}
+					Object.keys(servedBonds).forEach((key, i) => {
+						if (servedBonds[key]._notifies[dk[i]]) {
+							servedBonds[key].unnotify(dk[i])
+						} else {
+							console.warn(`Couldn't unnotify - already unnotified?!`)
+						}
+					})
+					console.log(`Unnotified ${index}`)
 				}
-			}))
+			} else {
+				console.warn("Weird: poll called after close & unnotify")
+			}
+		}
+		Object.keys(servedBonds).forEach(key => {
+			let b = servedBonds[key]
+			dk.push(b.notify(poll))
 			if (b._ready) {
 				ready[key] = b._value
 			} else {
