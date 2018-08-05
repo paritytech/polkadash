@@ -11,7 +11,7 @@ function serveBonds(servedBonds) {
 		var notReady = []
 		let active = true;
 		let dk = []
-		let poll = () => {
+		let poll = key => {
 			if (active) {
 				console.log(`Updating host ${ws.url} (${index}) with ${key}`)
 				try {
@@ -44,7 +44,7 @@ function serveBonds(servedBonds) {
 		}
 		Object.keys(servedBonds).forEach(key => {
 			let b = servedBonds[key]
-			dk.push(b.notify(poll))
+			dk.push(b.notify(() => poll(key)))
 			if (b._ready) {
 				ready[key] = b._value
 			} else {
