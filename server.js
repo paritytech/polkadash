@@ -5,7 +5,7 @@ let {Bond} = require('oo7')
 
 let config = {};
 try {
-	JSON.parse(require('fs').readFileSync(__dirname + '/config.json', 'utf8'))
+	config = JSON.parse(require('fs').readFileSync(__dirname + '/config.json', 'utf8'))
 } catch (e) {
 	console.log(`Error reading config.json: ${e}. Using defaults`)
 }
