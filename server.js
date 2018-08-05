@@ -1,10 +1,11 @@
 var express = require('express')
 var serveBonds = require('./ws').serveBonds
 let {Polkadot, bytesToHex} = require('./polkadot.js')
+let {Bond} = require('oo7')
 
 var app = express()
 
-let port = 80;
+let port = 3000;
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/client/dist/index.html');
@@ -44,5 +45,19 @@ serveBonds({
 	brokenPercentLate: polkadot.session.brokenPercentLate,
 	currentIndex: polkadot.session.currentIndex,
 	currentStart: polkadot.session.currentStart,
-	lastLengthChange: polkadot.session.lastLengthChange
+	lastLengthChange: polkadot.session.lastLengthChange,
+
+	sessionsPerEra: polkadot.staking.sessionsPerEra,
+	currentEra: polkadot.staking.currentEra,
+	intentions: polkadot.staking.intentions,
+
+	proposed: polkadot.democracy.proposed,
+	launchPeriod: polkadot.democracy.launchPeriod,
+	minimumDeposit: polkadot.democracy.minimumDeposit,
+	votingPeriod: polkadot.democracy.votingPeriod,
+	activeReferenda: Bond.all([polkadot.democracy.active, polkadot.height])
+		.map(([active, h]) =>
+			active.map(i => Object.assign({ remaining: i.ends - h }, i)
+		)
+)	
 })

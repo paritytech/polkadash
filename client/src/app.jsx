@@ -57,6 +57,18 @@ export class App extends React.Component {
 				<div>Current Start: <Rspan>{bonds.currentStart.map(d => d.toLocaleString())}</Rspan></div>
 				<div>Last Length Change: <Rspan>{bonds.lastLengthChange}</Rspan></div>
 			</div></div>
+			<div>Staking: <div style={{marginLeft: '1em'}}>
+				<div>Sessions per era: <Rspan>{bonds.sessionsPerEra}</Rspan></div>
+				<div>Current era: <Rspan>{bonds.currentEra}</Rspan></div>
+				<div>Intentions: <Rspan>{bonds.intentions.map(pretty)}</Rspan></div>
+			</div></div>
+			<div>Democracy: <div style={{marginLeft: '1em'}}>
+				<div>Active referenda: <Rspan>{bonds.activeReferenda.map(pretty)}</Rspan></div>
+				<div>Proposed referenda: <Rspan>{bonds.proposed.map(pretty)}</Rspan></div>
+				<div>Launch period: <Rspan>{bonds.launchPeriod.map(pretty)}</Rspan></div>
+				<div>Minimum deposit: <Rspan>{bonds.minimumDeposit.map(pretty)}</Rspan></div>
+				<div>Voting period: <Rspan>{bonds.votingPeriod.map(pretty)}</Rspan></div>
+			</div></div>
 		</div>);
 	}
 }
@@ -64,20 +76,7 @@ export class App extends React.Component {
 		this.pd = new Polkadot;
 		this.who = new oo7.Bond;
 */
-/*			<div>Staking: <div style={{marginLeft: '1em'}}>
-				<div>Sessions per era: <Rspan>{this.pd.staking.sessionsPerEra}</Rspan></div>
-				<div>Current era: <Rspan>{this.pd.staking.currentEra}</Rspan></div>
-				<div>Intentions: <Rspan>{this.pd.staking.intentions.map(pretty)}</Rspan></div>
-			</div></div>
-			<div>Democracy: <div style={{marginLeft: '1em'}}>
-				<div>Active referenda: <Rspan>{oo7.Bond.all([this.pd.democracy.active, this.pd.height]).map(([active, h]) =>
-					active.map(i => Object.assign({ remaining: i.ends - h }, i))
-				).map(pretty)}</Rspan></div>
-				<div>Proposed referenda: <Rspan>{this.pd.democracy.proposed.map(pretty)}</Rspan></div>
-				<div>Launch period: <Rspan>{this.pd.democracy.launchPeriod.map(pretty)}</Rspan></div>
-				<div>Minimum deposit: <Rspan>{this.pd.democracy.minimumDeposit.map(pretty)}</Rspan></div>
-				<div>Voting period: <Rspan>{this.pd.democracy.votingPeriod.map(pretty)}</Rspan></div>
-			</div></div>
+/*			
 			<div>Council: <div style={{marginLeft: '1em'}}>
 				<div>Members: <Rspan>{this.pd.council.active.map(pretty)}</Rspan></div>
 				<div>Candidates: <Rspan>{this.pd.council.candidates.map(pretty)}</Rspan></div>
