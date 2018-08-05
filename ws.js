@@ -19,15 +19,15 @@ function serveBonds(servedBonds) {
 					ws.send(s)
 				}
 				catch (e) {
-					console.log(`Error. Closing ${ws.url} (${index})`)
+					console.log(`Error: ${e}. Closing ${ws.url} (${index})`)
 					active = false
 					console.log(`Marked inactive ${index}`)
 					try {
 						ws.close()
 						console.log(`Closed ${index}`)
 					}
-					catch (e) {
-						console.log(`Error closing ${index}`)
+					catch (ee) {
+						console.log(`Error ${ee} closing ${index}`)
 					}
 					Object.keys(servedBonds).forEach((key, i) => {
 						if (servedBonds[key]._notifies[dk[i]]) {
