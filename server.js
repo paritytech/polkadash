@@ -1,6 +1,6 @@
 var express = require('express')
 var serveBonds = require('./ws').serveBonds
-let {Polkadot, bytesToHex} = require('./polkadot.js')
+let {Polkadot, bytesToHex, BlockNumber} = require('./polkadot.js')
 let {Bond} = require('oo7')
 
 let config = {};
@@ -13,13 +13,17 @@ try {
 var app = express()
 
 let port = config.port || 3000;
+let serveFiles = {
+	'': 'index.html',
+	'bundle.js': 'bundle.js',
+	'styles.css': 'styles.css'
+}
 
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/client/dist/index.html');
-})
-app.get('/bundle.js', function (req, res) {
-  res.sendFile(__dirname + '/client/dist/bundle.js');
-})
+Object.keys(serveFiles).forEach(k =>
+	app.get('/' + k, (req, res) => 
+		res.sendFile(__dirname + '/client/dist/' + serveFiles[k])
+	)
+)
 app.listen(port, function () {
 	console.log(`Listening on port ${port}!`)
 })
@@ -29,16 +33,14 @@ serveBonds({
 	height: polkadot.height,
 	codeSize: polkadot.codeSize,
 	codeHash: polkadot.codeHash.map(bytesToHex),
-	authorities: polkadot.authorities.map(
-		w => w.map(
-			who => ({who, balance: polkadot.staking.balance(who)})
-		), 2
-	),
+	authorities: polkadot.authorities
+		.map(v => v.map(who => ({who, balance: polkadot.staking.balance(who)})), 2)
+		.map(v => v.sort((a, b) => b.balance - a.balance)),
 	nextThreeUp: polkadot.staking.intentions.map(
 		l => ([polkadot.authorities, l.map(a => ({
 			a: a, balance: polkadot.staking.balance(a)
 		}) ) ]), 3
-	).map(([c, l]) => l.sort((a, b) => +b.balance - +a.balance)
+	).map(([c, l]) => l.sort((a, b) => b.balance - a.balance)
 	.filter(i => !c.some(x => x+'' == i.a+'')).slice(0, 3)),
 	now: polkadot.timestamp.now,
 	blockPeriod: polkadot.timestamp.blockPeriod,
@@ -46,8 +48,8 @@ serveBonds({
 		polkadot.staking.balance(who[who.length - 1])
 	),
 
-	blocksRemaining: polkadot.session.blocksRemaining,
-	length: polkadot.session.length,
+	sessionBlocksRemaining: polkadot.session.blocksRemaining,
+	sessionLength: polkadot.session.length,
 	percentLate: polkadot.session.percentLate,
 	brokenPercentLate: polkadot.session.brokenPercentLate,
 	currentIndex: polkadot.session.currentIndex,
@@ -56,7 +58,9 @@ serveBonds({
 
 	sessionsPerEra: polkadot.staking.sessionsPerEra,
 	currentEra: polkadot.staking.currentEra,
-	intentions: polkadot.staking.intentions,
+	eraBlocksRemaining: polkadot.staking.eraBlocksRemaining,
+	eraLength: polkadot.staking.eraLength,
+	nextValidators: polkadot.staking.nextValidators,
 
 	proposed: polkadot.democracy.proposed,
 	launchPeriod: polkadot.democracy.launchPeriod,

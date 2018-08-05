@@ -621,8 +621,8 @@ class Polkadot {
 		this.session.blocksRemaining = Bond
 			.all([this.height, this.session.lastLengthChange, this.session.length])
 			.map(([h, c, l]) => {
-				let lm1 = l - 1;
-				return lm1 - (h - (c || 0) + lm1) % l;
+				c = (c || 0);
+				return l - (h - c - 1 + l) % l;
 			});
 		this.session.percentLate = Bond
 			.all([
@@ -632,7 +632,9 @@ class Polkadot {
 				this.session.length,
 				this.session.currentStart,
 			]).map(([p, n, r, l, s]) =>
-				(n.number + p.number * r - s.number) / (p.number * l) * 100 - 100
+				r == l || r == 0
+					? 0
+					: (n.number + p.number * (r - 1) - s.number) / (p.number * l) * 100 - 100
 			);
 
 		this.staking = {
@@ -640,13 +642,31 @@ class Polkadot {
 			currentEra: storageValue('sta:era', r => deslice(r, 'T::BlockNumber')),
 			sessionsPerEra: storageValue('sta:spe', r => deslice(r, 'T::BlockNumber')),
 			intentions: storageValue('sta:wil:', r => r ? deslice(r, 'Vec<AccountId>') : []),
-			lastEraLengthChange: storageValue('sta:lec', r => r ? deslice(r, 'T::BlockNumber') : 0)
+			lastEraLengthChange: storageValue('sta:lec', r => r ? deslice(r, 'T::BlockNumber') : 0),
+			validatorCount: storageValue('sta:vac', r => r ? deslice(r, 'u32') : 0)
 		};
-		this.staking.nextValidators = this.staking.intentions.mapEach(a => ({
-			who: a,
-			balance: this.staking.balance(a)
-		}), 2)
-			.map(as => as.sort((a, b) => a.balance > b.balance));
+		this.staking.eraLength = Bond
+			.all([
+				this.staking.sessionsPerEra,
+				this.session.length
+			]).map(([a, b]) => a * b);
+		this.staking.nextValidators = Bond
+			.all([
+				this.staking.intentions.map(as => as.map(a => ({
+					who: a,
+					balance: this.staking.balance(a)
+				})), 2),
+				this.staking.validatorCount
+			]).map(([as, vc]) => as.sort((a, b) => b.balance - a.balance).slice(0, vc));
+		this.staking.eraBlocksRemaining = Bond
+			.all([
+				this.staking.sessionsPerEra,
+				this.session.length,
+				this.session.currentIndex,
+				this.session.blocksRemaining
+			]).map(([spe, sl, si, br]) => {
+				return br + sl * (spe - 1 - ((si - 1 + spe) % spe));
+			});
 		
 		// TODO: if era ends early, we need to reset era length change...
 /*		this.staking.currentSession = Bond

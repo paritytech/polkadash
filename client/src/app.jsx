@@ -1,5 +1,5 @@
 import oo7 from 'oo7';
-import {Rspan} from 'oo7-react';
+import {Rspan, ReactiveComponent} from 'oo7-react';
 import React from 'react';
 import {pretty, reviver} from './polkadot.js';
 
@@ -34,47 +34,95 @@ export class WebSocketBond extends oo7.Bond {
 
 let bonds = (new WebSocketBond(reviver)).subscriptable();
 
-export class App extends React.Component {
+export class Dot extends ReactiveComponent {
 	constructor () {
-		super();
+		super(["value", "className"])
 	}
 	render() {
-		return (<div>
-			<div>Chain: <div style={{marginLeft: '1em'}}>
-				<div>Height: #<Rspan>{bonds.height.map(pretty)}</Rspan></div>
-				<div>Code: <Rspan>{bonds.codeSize}</Rspan> bytes (<Rspan>{bonds.codeHash}</Rspan>)</div>
-				<div>Authorities:
-					<Rspan>{bonds.authorities.map(pretty)}</Rspan></div>
-				<div>Next three up: <Rspan>{bonds.nextThreeUp.map(pretty)}</Rspan></div>
-				<div>Now: <Rspan>{bonds.now.map(pretty)}</Rspan></div>
-				<div>Block Period: <Rspan>{bonds.blockPeriod.map(x => x.number + ' seconds')}</Rspan></div>
-				<div>Limit to become validator: <Rspan>{bonds.validatorLimit.map(pretty)}</Rspan></div>
-			</div></div>
-			<div>Sessions: <div style={{marginLeft: '1em'}}>
-				<div>Remaining: <Rspan>{bonds.blocksRemaining.map(pretty)}</Rspan> of <Rspan>{bonds.length.map(pretty)}</Rspan></div>
-				<div>Lateness: <Rspan>{bonds.percentLate.map(Math.round)}</Rspan>% of <Rspan>{bonds.brokenPercentLate}</Rspan>%</div>
-				<div>Current Index: <Rspan>{bonds.currentIndex.map(pretty)}</Rspan></div>
-				<div>Current Start: <Rspan>{bonds.currentStart.map(d => d.toLocaleString())}</Rspan></div>
-				<div>Last Length Change: #<Rspan>{bonds.lastLengthChange.map(pretty)}</Rspan></div>
-			</div></div>
-			<div>Staking: <div style={{marginLeft: '1em'}}>
-				<div>Sessions per era: <Rspan>{bonds.sessionsPerEra.map(pretty)}</Rspan></div>
-				<div>Current era: <Rspan>{bonds.currentEra.map(pretty)}</Rspan></div>
-				<div>Intentions: <Rspan>{bonds.intentions.map(pretty)}</Rspan></div>
-			</div></div>
-			<div>Democracy: <div style={{marginLeft: '1em'}}>
-				<div>Active referenda: <Rspan>{bonds.activeReferenda.map(pretty)}</Rspan></div>
-				<div>Proposed referenda: <Rspan>{bonds.proposed.map(pretty)}</Rspan></div>
-				<div>Launch period: <Rspan>{bonds.launchPeriod.map(pretty)}</Rspan></div>
-				<div>Minimum deposit: <Rspan>{bonds.minimumDeposit.map(pretty)}</Rspan></div>
-				<div>Voting period: <Rspan>{bonds.votingPeriod.map(pretty)}</Rspan></div>
-			</div></div>
+		return (<span className={this.state.className} name={this.props.name}>
+			{(this.props.prefix || '') + pretty(this.state.value) + (this.props.suffix || '')}
+		</span>)
+	}
+}
+
+export class ValidatorBalances extends ReactiveComponent {
+	constructor () {
+		super(["value", "className"])
+	}
+	render() {
+		if (!this.state.value) return (<div/>)
+		return (<div className={this.state.className} name={this.props.name}>
+			{this.state.value.map((v, i) => (<div key={i} className="validator-balance">
+				<div className="AccountId">{pretty(v.who)}</div>
+				<div className="Balance">{pretty(v.balance)}</div>
+			</div>))}
+		</div>)
+	}
+}
+
+export class App extends React.Component {
+	constructor () {
+		super()
+	}
+	render() {
+		return (
+		<div id="dash">
+			<div className="value" id="height">
+				<div className="label">height</div>
+				<Dot prefix="#" value={bonds.height}/>
+			</div>
+			<div className="value" id="session-blocks-remaining">
+				<div className="label">blocks remaining in session</div>
+				<Dot value={bonds.sessionBlocksRemaining} suffix=" of "/>
+				<Dot value={bonds.sessionLength}/>
+			</div>
+			<div className="value" id="session-lateness">
+				<div className="label">session lateness</div>
+				<Dot value={bonds.percentLate.map(Math.round)} suffix="% of "/>
+				<Dot value={bonds.brokenPercentLate} suffix="%"/>
+			</div>
+			<div className="value" id="era-blocks-remaining">
+				<div className="label">blocks left in current era</div>
+				<Dot value={bonds.eraBlocksRemaining} suffix=" of "/>
+				<Dot value={bonds.eraLength}/>
+			</div>
+			<div className="big list" id="current-validators">
+				<div className="label">current validators</div>
+				<ValidatorBalances value={bonds.authorities}/>
+			</div>
+			<div className="big list" id="next-validators">
+				<div className="label">next validators</div>
+				<ValidatorBalances value={bonds.nextValidators}/>
+			</div>
 		</div>);
 	}
 }
 /*
-		this.pd = new Polkadot;
-		this.who = new oo7.Bond;
+			<div>
+				<div>Chain: <div style={{marginLeft: '1em'}}>
+					<div>Code: <Rspan>{bonds.codeSize}</Rspan> bytes (<Rspan>{bonds.codeHash}</Rspan>)</div>
+					<div>Next three up: <Rspan>{bonds.nextThreeUp.map(pretty)}</Rspan></div>
+					<div>Now: <Rspan>{bonds.now.map(pretty)}</Rspan></div>
+					<div>Block Period: <Rspan>{bonds.blockPeriod.map(x => x.number + ' seconds')}</Rspan></div>
+					<div>Limit to become validator: <Rspan>{bonds.validatorLimit.map(pretty)}</Rspan></div>
+				</div></div>
+				<div>Sessions: <div style={{marginLeft: '1em'}}>
+					<div>Current Index: <Rspan>{bonds.currentIndex.map(pretty)}</Rspan></div>
+					<div>Current Start: <Rspan>{bonds.currentStart.map(d => d.toLocaleString())}</Rspan></div>
+					<div>Last Length Change: #<Rspan>{bonds.lastLengthChange.map(pretty)}</Rspan></div>
+				</div></div>
+				<div>Staking: <div style={{marginLeft: '1em'}}>
+					<div>Sessions per era: <Rspan>{bonds.sessionsPerEra.map(pretty)}</Rspan></div>
+					<div>Current era: <Rspan>{bonds.currentEra.map(pretty)}</Rspan></div>
+				</div></div>
+				<div>Democracy: <div style={{marginLeft: '1em'}}>
+					<div>Active referenda: <Rspan>{bonds.activeReferenda.map(pretty)}</Rspan></div>
+					<div>Proposed referenda: <Rspan>{bonds.proposed.map(pretty)}</Rspan></div>
+					<div>Launch period: <Rspan>{bonds.launchPeriod.map(pretty)}</Rspan></div>
+					<div>Minimum deposit: <Rspan>{bonds.minimumDeposit.map(pretty)}</Rspan></div>
+					<div>Voting period: <Rspan>{bonds.votingPeriod.map(pretty)}</Rspan></div>
+				</div></div>
+			</div>
 */
 /*			
 			<div>Council: <div style={{marginLeft: '1em'}}>
