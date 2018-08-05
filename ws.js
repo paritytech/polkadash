@@ -3,21 +3,23 @@ let oo7 = require('oo7')
 
 function serveBonds(servedBonds) {
 	let wss = new WebSocketServer({port: 40510})
+	let count = 0;
 
 	wss.on('connection', function (ws) {
-		var ready = {};
-		var notReady = [];
+		let index = count++;
+		var ready = {}
+		var notReady = []
 		let dk = []
 		Object.keys(servedBonds).forEach(key => {
 			let b = servedBonds[key]
 			dk.push(b.notify(() => {
-				console.log(`Updating host ${ws.address} with ${key}`)
+				console.log(`Updating host ${ws.url} (${index}) with ${key}`)
 				try {
 					let s = JSON.stringify(b._ready ? { key, value: b._value } : { key })
 					ws.send(s)
 				}
 				catch (e) {
-					console.log(`Error. Closing ${ws.address}`)
+					console.log(`Error. Closing ${ws.url} (${index})`)
 					if (dk) {
 						Object.keys(servedBonds).forEach((key, i) => {
 							servedBonds[key].unnotify(dk[i])
