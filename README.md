@@ -16,7 +16,7 @@ $ cd client && npm run dev
 
 Then in another, run server:
 ```
-$ npm start
+$ npm run dev
 ``` 
 
 Open browser
