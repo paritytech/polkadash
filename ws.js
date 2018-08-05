@@ -11,10 +11,20 @@ function serveBonds(servedBonds) {
 		var notReady = []
 		let active = true;
 		let dk = []
+		let unnotify = () => {
+			Object.keys(servedBonds).forEach((k, i) => {
+				if (servedBonds[k]._notifies[dk[i]]) {
+					servedBonds[k].unnotify(dk[i])
+				} else {
+					console.warn(`Couldn't unnotify - already unnotified?!`)
+				}
+			})
+		}
 		let poll = key => {
 			if (active) {
 				console.log(`Updating host ${ws.url} (${index}) with ${key}`)
 				try {
+					let b = servedBonds[key]
 					let s = JSON.stringify(b._ready ? { key, value: b._value } : { key })
 					ws.send(s)
 				}
@@ -29,13 +39,7 @@ function serveBonds(servedBonds) {
 					catch (ee) {
 						console.log(`Error ${ee} closing ${index}`)
 					}
-					Object.keys(servedBonds).forEach((key, i) => {
-						if (servedBonds[key]._notifies[dk[i]]) {
-							servedBonds[key].unnotify(dk[i])
-						} else {
-							console.warn(`Couldn't unnotify - already unnotified?!`)
-						}
-					})
+					unnotify()
 					console.log(`Unnotified ${index}`)
 				}
 			} else {
