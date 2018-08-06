@@ -28,6 +28,11 @@ app.listen(port, function () {
 	console.log(`Listening on port ${port}!`)
 })
 
+process.on('unhandledRejection', error => {
+	// Will print "unhandledRejection err is not defined"
+	console.log('unhandledRejection', error.message);
+});
+
 let polkadot = new Polkadot
 serveBonds({
 	height: polkadot.height,
