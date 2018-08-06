@@ -237,7 +237,11 @@ class Moment extends Date {
 		return { _type: 'Moment', data: this.number }
 	}
 }
-class Balance extends Number { toJSON() { return { _type: 'Balance', data: this+0 } }}
+class Balance extends Number {
+	toJSON() { return { _type: 'Balance', data: this+0 } }
+	add(b) { return new Balance(this + b) }
+	sub(b) { return new Balance(this - b) }
+}
 class BlockNumber extends Number { toJSON() { return { _type: 'BlockNumber', data: this+0 } }}
 class Tuple extends Array { toJSON() { return { _type: 'Tuple', data: this } }}
 class CallProposal extends Object { constructor (isCall) { super(); this.isCall = isCall; } }
@@ -674,10 +678,15 @@ class Polkadot {
 			.all([
 				this.staking.intentions.map(as => as.map(a => ({
 					who: a,
-					balance: this.staking.stakingBalance(a)
+					ownBalance: this.staking.votingBalance(a),
+					otherBalance: this.staking.nominatedBalance(a)
 				})), 2),
 				this.staking.validatorCount
-			]).map(([as, vc]) => as.sort((a, b) => b.balance - a.balance).slice(0, vc));
+			]).map(([as, vc]) => as
+				.map(i => Object.assign({balance: new Balance(i.ownBalance + i.otherBalance)}, i))
+				.sort((a, b) => b.balance - a.balance)
+				.slice(0, vc)
+			),
 		this.staking.eraBlocksRemaining = Bond
 			.all([
 				this.staking.sessionsPerEra,

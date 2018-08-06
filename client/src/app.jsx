@@ -54,7 +54,13 @@ export class ValidatorBalances extends ReactiveComponent {
 		return (<div className={this.state.className} name={this.props.name}>
 			{this.state.value.map((v, i) => (<div key={i} className="validator-balance">
 				<div className="AccountId">{pretty(v.who)}</div>
-				<div className="Balance">{pretty(v.balance)}</div>
+				<div className="Balance">{pretty(v.balance)}{
+					(v.otherBalance > 0
+						? <span className="paren">{' (incl. ' + pretty(v.otherBalance) + ' nominated)'}</span>
+						: <span/>
+					)
+				}</div>
+				
 			</div>))}
 		</div>)
 	}
@@ -63,6 +69,8 @@ export class ValidatorBalances extends ReactiveComponent {
 export class App extends React.Component {
 	constructor () {
 		super()
+		window.bonds = bonds
+		window.pretty = pretty
 	}
 	render() {
 		return (

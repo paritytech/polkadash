@@ -61,3 +61,7 @@ html,body {
 .validator-balance {
 	margin: 5px;
 }
+
+.paren {
+	color: #aaa;
+}
