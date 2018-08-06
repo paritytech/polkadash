@@ -9,7 +9,11 @@ export class WebSocketBond extends oo7.Bond {
 		this.reviver = reviver
 	}
 	initialise () {
-		this.ws = new WebSocket(`ws://${new URL(document.location.origin).hostname}:40510`)
+		this.start()
+	}
+	start () {
+		let uri = `ws://${new URL(document.location.origin).hostname}:40510`;
+		this.ws = new WebSocket(uri)
 		this.ws.onopen = function () {}
 		let that = this;
 		this.ws.onmessage = function (ev) {
@@ -25,6 +29,14 @@ export class WebSocketBond extends oo7.Bond {
 				}
 				that.trigger(o)
 			}
+			if (that.reconnect) {
+				window.clearTimeout(that.reconnect)
+			}
+			that.reconnect = window.setTimeout(() => {
+				that.ws.close()
+				delete that.ws
+				that.start()
+			}, 60000)
 		}
 	}
 	finalise () {
@@ -102,6 +114,14 @@ export class App extends React.Component {
 				<div className="label">next validators</div>
 				<ValidatorBalances value={bonds.nextValidators}/>
 			</div>
+			<div id="rest">
+				<div>eraSessionsRemaining: <Dot value={bonds.eraSessionsRemaining}/></div>
+				<div>activeReferenda: <Dot value={bonds.activeReferenda}/></div>
+				<div>proposedReferenda: <Dot value={bonds.proposed}/></div>
+				<div>launchPeriod: <Dot value={bonds.launchPeriod}/></div>
+				<div>minimumDeposit: <Dot value={bonds.minimumDeposit}/></div>
+				<div>votingPeriod: <Dot value={bonds.votingPeriod}/></div>
+			</div>
 		</div>);
 	}
 }
@@ -122,13 +142,6 @@ export class App extends React.Component {
 				<div>Staking: <div style={{marginLeft: '1em'}}>
 					<div>Sessions per era: <Rspan>{bonds.sessionsPerEra.map(pretty)}</Rspan></div>
 					<div>Current era: <Rspan>{bonds.currentEra.map(pretty)}</Rspan></div>
-				</div></div>
-				<div>Democracy: <div style={{marginLeft: '1em'}}>
-					<div>Active referenda: <Rspan>{bonds.activeReferenda.map(pretty)}</Rspan></div>
-					<div>Proposed referenda: <Rspan>{bonds.proposed.map(pretty)}</Rspan></div>
-					<div>Launch period: <Rspan>{bonds.launchPeriod.map(pretty)}</Rspan></div>
-					<div>Minimum deposit: <Rspan>{bonds.minimumDeposit.map(pretty)}</Rspan></div>
-					<div>Voting period: <Rspan>{bonds.votingPeriod.map(pretty)}</Rspan></div>
 				</div></div>
 			</div>
 */

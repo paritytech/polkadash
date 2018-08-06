@@ -65,3 +65,11 @@ html,body {
 .paren {
 	color: #aaa;
 }
+
+#rest {
+	margin: 30px;
+	color: #aaa;
+	font-size: 12;
+	text-align: left;
+	width: 100%;
+}

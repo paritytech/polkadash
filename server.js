@@ -34,21 +34,25 @@ serveBonds({
 	codeSize: polkadot.codeSize,
 	codeHash: polkadot.codeHash.map(bytesToHex),
 	authorities: polkadot.authorities
-		.map(v => v.map(who => ({who, ownBalance: polkadot.staking.votingBalance(who), otherBalance: polkadot.staking.currentNominatedBalance(who)})), 2)
+		.map(v => v.map(who => ({
+			who,
+			ownBalance: polkadot.staking.votingBalance(who),
+			otherBalance: polkadot.staking.currentNominatedBalance(who)
+		})), 2)
 		.map(v => v
 			.map(i => Object.assign({balance: i.ownBalance.add(i.otherBalance)}, i))
 			.sort((a, b) => b.balance - a.balance)
 		),
-	nextThreeUp: polkadot.staking.intentions.map(
+	/*nextThreeUp: polkadot.staking.intentions.map(
 		l => ([polkadot.authorities, l.map(who => ({
-			who: who, ownBalance: polkadot.staking.votingBalance(who), otherBalance: polkadot.staking.nominatedBalance(who)
+			who, ownBalance: polkadot.staking.votingBalance(who), otherBalance: polkadot.staking.nominatedBalance(who)
 		}) ) ]), 3
 	).map(([c, l]) => l
 		.map(i => Object.assign({balance: i.ownBalance.add(i.otherBalance)}, i))
 		.sort((a, b) => b.balance - a.balance)
 		.filter(i => !c.some(x => x+'' == i.a+''))
 		.slice(0, 3)
-	),
+	),*/
 	now: polkadot.timestamp.now,
 	blockPeriod: polkadot.timestamp.blockPeriod,
 	validatorLimit: polkadot.authorities.map(who =>
@@ -66,6 +70,7 @@ serveBonds({
 	sessionsPerEra: polkadot.staking.sessionsPerEra,
 	currentEra: polkadot.staking.currentEra,
 	eraBlocksRemaining: polkadot.staking.eraBlocksRemaining,
+	eraSessionsRemaining: polkadot.staking.eraSessionsRemaining,
 	eraLength: polkadot.staking.eraLength,
 	nextValidators: polkadot.staking.nextValidators,
 
@@ -76,6 +81,5 @@ serveBonds({
 	activeReferenda: Bond.all([polkadot.democracy.active, polkadot.height])
 		.map(([active, h]) =>
 			active.map(i => Object.assign({ remaining: i.ends - h }, i)
-		)
-)	
+		))
 })

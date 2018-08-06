@@ -245,13 +245,13 @@ class Balance extends Number {
 class BlockNumber extends Number { toJSON() { return { _type: 'BlockNumber', data: this+0 } }}
 class Tuple extends Array { toJSON() { return { _type: 'Tuple', data: this } }}
 class CallProposal extends Object { constructor (isCall) { super(); this.isCall = isCall; } }
-class Proposal extends Object {
-	constructor () { super(false) }
-	toJSON() { return { _type: 'Proposal', data: this } }
+class Proposal extends CallProposal {
+	constructor (o) { super(false); Object.assign(this, o) }
+	toJSON() { return { _type: 'Proposal', data: { module: this.module, name: this.name, params: this.params } } }
 }
-class Call extends Object {
-	constructor () { super(true) }
-	toJSON() { return { _type: 'Call', data: this } }
+class Call extends CallProposal {
+	constructor (o) { super(true); Object.assign(this, o) }
+	toJSON() { return { _type: 'Call', data: { module: this.module, name: this.name, params: this.params } } }
 }
 
 function reviver(key, bland) {
@@ -636,9 +636,9 @@ class Polkadot {
 				this.session.length,
 				this.session.currentStart,
 			]).map(([p, n, r, l, s]) =>
-				r == l || r == 0
+				+r == +l
 					? 0
-					: (n.number + p.number * (r - 1) - s.number) / (p.number * l) * 100 - 100
+					: ((n.number + p.number * (r - 1) - s.number) / (p.number * l) * 100 - 100)
 			);
 
 		this.staking = {
@@ -647,7 +647,7 @@ class Polkadot {
 			currentEra: storageValue('sta:era', r => deslice(r, 'T::BlockNumber')),
 			sessionsPerEra: storageValue('sta:spe', r => deslice(r, 'T::BlockNumber')),
 			intentions: storageValue('sta:wil:', r => r ? deslice(r, 'Vec<AccountId>') : []),
-			lastEraLengthChange: storageValue('sta:lec', r => r ? deslice(r, 'T::BlockNumber') : 0),
+			lastEraLengthChange: storageValue('sta:lec', r => r ? deslice(r, 'T::BlockNumber') : new BlockNumber(0)),
 			validatorCount: storageValue('sta:vac', r => r ? deslice(r, 'u32') : 0),
 			nominatorsFor: storageMap('sta:nominators_for', r => r ? deslice(r, 'Vec<T::AccountId>') : []),
 			currentNominatorsFor: storageMap('sta:current_nominators_for', r => r ? deslice(r, 'Vec<T::AccountId>') : [])
@@ -686,16 +686,19 @@ class Polkadot {
 				.map(i => Object.assign({balance: new Balance(i.ownBalance + i.otherBalance)}, i))
 				.sort((a, b) => b.balance - a.balance)
 				.slice(0, vc)
-			),
-		this.staking.eraBlocksRemaining = Bond
+			);
+		this.staking.eraSessionsRemaining = Bond
 			.all([
 				this.staking.sessionsPerEra,
-				this.session.length,
 				this.session.currentIndex,
+				this.staking.lastEraLengthChange
+			]).map(([spe, si, lec]) => (spe - 1 - (si - lec) % spe));
+		this.staking.eraBlocksRemaining = Bond
+			.all([
+				this.session.length,
+				this.staking.eraSessionsRemaining,
 				this.session.blocksRemaining
-			]).map(([spe, sl, si, br]) => {
-				return br + sl * (spe - 1 - ((si - 1 + spe) % spe));
-			});
+			]).map(([sl, sr, br]) => br + sl * sr);
 		
 		// TODO: if era ends early, we need to reset era length change...
 /*		this.staking.currentSession = Bond
