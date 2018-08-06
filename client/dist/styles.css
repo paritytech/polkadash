@@ -82,3 +82,11 @@ html,body {
 	float: left;
 	margin-right: 10px;
 }
+
+#title {
+	flex-basis: 100%;
+	text-align: left;
+}
+#title img {
+	height: 32px;
+}

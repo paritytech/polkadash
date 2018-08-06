@@ -109,7 +109,8 @@ export class App extends React.Component {
 	}
 	render() {
 		return (
-		<div id="dash">
+			<div id="dash">
+			<div id="title"><img src="https://polkadot.network/static/media/logo.096371c0.svg"/></div>
 			<div className="value" id="height">
 				<div className="label">height</div>
 				<Dot prefix="#" value={bonds.height}/>
