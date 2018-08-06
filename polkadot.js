@@ -622,11 +622,11 @@ class Polkadot {
 			brokenPercentLate: storageValue('ses:broken_percent_late', r => deslice(r, 'u32')),
 			lastLengthChange: storageValue('ses:llc', r => r ? deslice(r, 'T::BlockNumber') : 0)
 		};
-		this.session.blocksRemaining = Bond
+		this.session.blocksRemaining = Bond					// 1..60
 			.all([this.height, this.session.lastLengthChange, this.session.length])
 			.map(([h, c, l]) => {
 				c = (c || 0);
-				return l - (h - c - 1 + l) % l;
+				return l - (h - c + l) % l;
 			});
 		this.session.percentLate = Bond
 			.all([
@@ -636,9 +636,7 @@ class Polkadot {
 				this.session.length,
 				this.session.currentStart,
 			]).map(([p, n, r, l, s]) =>
-				+r == +l
-					? 0
-					: ((n.number + p.number * (r - 1) - s.number) / (p.number * l) * 100 - 100)
+				Math.round((n.number + p.number * r - s.number) / (p.number * l) * 100 - 100)
 			);
 
 		this.staking = {

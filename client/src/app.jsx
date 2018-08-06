@@ -22,11 +22,13 @@ export class WebSocketBond extends oo7.Bond {
 				that.trigger(d.ready)
 			} else if (that.isReady() && !d.init) {
 				let o = Object.assign({}, that._value)
-				if (d.value) {
-					o[d.key] = d.value
-				} else {
-					delete o[d.key]
-				}
+				Object.keys(d).forEach(k => {
+					if (typeof(d[k].value) == 'undefined') {
+						delete o[k]
+					} else {
+						o[k] = d[k].value
+					}
+				})
 				that.trigger(o)
 			}
 			if (that.reconnect) {
@@ -115,12 +117,21 @@ export class App extends React.Component {
 				<ValidatorBalances value={bonds.nextValidators}/>
 			</div>
 			<div id="rest">
-				<div>eraSessionsRemaining: <Dot value={bonds.eraSessionsRemaining}/></div>
-				<div>activeReferenda: <Dot value={bonds.activeReferenda}/></div>
-				<div>proposedReferenda: <Dot value={bonds.proposed}/></div>
-				<div>launchPeriod: <Dot value={bonds.launchPeriod}/></div>
-				<div>minimumDeposit: <Dot value={bonds.minimumDeposit}/></div>
-				<div>votingPeriod: <Dot value={bonds.votingPeriod}/></div>
+				<div>
+					<div>eraSessionsRemaining: <Dot value={bonds.eraSessionsRemaining}/></div>
+					<div>activeReferenda: <Dot value={bonds.activeReferenda}/></div>
+					<div>proposedReferenda: <Dot value={bonds.proposed}/></div>
+					<div>launchPeriod: <Dot value={bonds.launchPeriod}/></div>
+					<div>minimumDeposit: <Dot value={bonds.minimumDeposit}/></div>
+					<div>votingPeriod: <Dot value={bonds.votingPeriod}/></div>
+				</div>
+				<div>
+					<div>blockPeriod: <Dot value={bonds.blockPeriod}/></div>
+					<div>now: <Dot value={bonds.now}/></div>
+					<div>sessionBlocksRemaining: <Dot value={bonds.sessionBlocksRemaining}/></div>
+					<div>sessionLength: <Dot value={bonds.sessionLength}/></div>
+					<div>currentStart: <Dot value={bonds.currentStart}/></div>
+				</div>
 			</div>
 		</div>);
 	}

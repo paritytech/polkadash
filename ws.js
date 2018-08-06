@@ -1,61 +1,66 @@
 var WebSocketServer = require('ws').Server
 let oo7 = require('oo7')
 
-function serveBonds(servedBonds) {
+function serveBonds(servedBonds, debugBonds = {}) {
 	let wss = new WebSocketServer({port: 40510})
-	let count = 0;
+	let connections = []
+	let nextBroadcast = {}
+
+	let broadcast = () => {
+//		console.debug(`Broadcasting`, nextBroadcast)
+		let msg = JSON.stringify(nextBroadcast)
+		nextBroadcast = {}
+
+		connections.forEach((ws, i, o) => {
+			try {
+				ws.send(msg)
+			}
+			catch (e) {
+				console.log(`Error ${e} sending. Closing...`)
+				o.splice(i, 1)
+				try {
+					ws.close()
+				}
+				catch (ee) {
+					console.log(`Error ${ee} closing. Ignoring.`)
+				}
+			}
+		})
+	}
+
+	let broadcastTimer = null;
+	let notify = (key, i, ready, value) => {
+		nextBroadcast[key] = ready ? { value } : {}
+		if (debugBonds[key]) {
+			console.log(
+				debugBonds[key] == 'value'
+					? `Updating ${key} := ${ready ? JSON.stringify(value) : '<not ready>'}`
+					: `Updating ${key}`
+			)
+		}
+		if (broadcastTimer) {
+			clearTimeout(broadcastTimer)
+		}
+		broadcastTimer = setTimeout(broadcast, 0);
+	}
+	Object.keys(servedBonds)
+		.forEach((key, i) => {
+			let b = servedBonds[key]
+			b.notify(() => notify(key, i, b._ready, b._value))
+		})
 
 	wss.on('connection', function (ws) {
-		let index = count++;
-		var ready = {}
-		var notReady = []
-		let active = true;
-		let dk = []
-		let unnotify = () => {
-			Object.keys(servedBonds).forEach((k, i) => {
-				if (servedBonds[k]._notifies[dk[i]]) {
-					servedBonds[k].unnotify(dk[i])
-				} else {
-					console.warn(`Couldn't unnotify - already unnotified?!`)
-				}
-			})
-		}
-		let poll = key => {
-			if (active) {
-				console.log(`Updating host ${ws.url} (${index}) with ${key}`)
-				try {
-					let b = servedBonds[key]
-					let s = JSON.stringify(b._ready ? { key, value: b._value } : { key })
-					ws.send(s)
-				}
-				catch (e) {
-					console.log(`Error: ${e}. Closing ${ws.url} (${index})`)
-					active = false
-					console.log(`Marked inactive ${index}`)
-					try {
-						ws.close()
-						console.log(`Closed ${index}`)
-					}
-					catch (ee) {
-						console.log(`Error ${ee} closing ${index}`)
-					}
-					unnotify()
-					console.log(`Unnotified ${index}`)
-				}
-			} else {
-				console.warn("Weird: poll called after close & unnotify")
-			}
-		}
+		connections.push(ws);
+		let ready = {}
 		Object.keys(servedBonds).forEach(key => {
 			let b = servedBonds[key]
-			dk.push(b.notify(() => poll(key)))
 			if (b._ready) {
 				ready[key] = b._value
 			} else {
 				notReady.push(key)
 			}
 		})
-		let s = JSON.stringify({ init: true, notReady, ready })
+		let s = JSON.stringify({ init: true, ready })
 		ws.send(s)
 	})
 	
