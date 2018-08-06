@@ -2,7 +2,8 @@ import oo7 from 'oo7';
 import React from 'react';
 import {ReactiveComponent} from 'oo7-react';
 import CircularProgressbar from 'react-circular-progressbar';
-import Identicon from './Identicon'
+import 'react-circular-progressbar/dist/styles.css';
+import Identicon from './Identicon';
 import {pretty, reviver} from './polkadot.js';
 
 export class WebSocketBond extends oo7.Bond {

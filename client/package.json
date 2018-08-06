@@ -29,9 +29,6 @@
     "webpack-cli": "^2.0.14"
   },
   "dependencies": {
-    "@polkadot/ui-react": "^0.19.18",
-    "@polkadot/util": "^0.27.1",
-    "@polkadot/util-keyring": "^0.27.1",
     "blakejs": "^1.1.0",
     "bs58": "^4.0.1",
     "css-loader": "^0.28.11",
@@ -42,8 +39,6 @@
     "react": "^16.3.2",
     "react-circular-progressbar": "^1.0.0",
     "react-dom": "^16.3.2",
-    "react-router": "^4.3.1",
-    "react-router-dom": "^4.3.1",
     "semantic-ui-css": "^2.3.1",
     "semantic-ui-react": "^0.79.1",
     "style-loader": "^0.20.3",
