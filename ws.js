@@ -56,8 +56,6 @@ function serveBonds(servedBonds, debugBonds = {}) {
 			let b = servedBonds[key]
 			if (b._ready) {
 				ready[key] = b._value
-			} else {
-				notReady.push(key)
 			}
 		})
 		let s = JSON.stringify({ init: true, ready })

@@ -60,6 +60,7 @@ html,body {
 
 .validator-balance {
 	margin: 5px;
+	clear: left;
 }
 
 .paren {
@@ -89,4 +90,8 @@ html,body {
 }
 #title img {
 	height: 32px;
+}
+
+.identicon {
+	float: left;
 }

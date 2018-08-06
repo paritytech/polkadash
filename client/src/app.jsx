@@ -1,8 +1,8 @@
 import oo7 from 'oo7';
-import {Rspan, ReactiveComponent} from 'oo7-react';
-import CircularProgressbar from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 import React from 'react';
+import {ReactiveComponent} from 'oo7-react';
+import CircularProgressbar from 'react-circular-progressbar';
+import Identicon from './Identicon'
 import {pretty, reviver} from './polkadot.js';
 
 export class WebSocketBond extends oo7.Bond {
@@ -66,6 +66,7 @@ export class RCircularProgressbar extends ReactiveComponent {
 	}
 }
 
+
 export class Dot extends ReactiveComponent {
 	constructor () {
 		super(["value", "className"])
@@ -85,6 +86,7 @@ export class ValidatorBalances extends ReactiveComponent {
 		if (!this.state.value) return (<div/>)
 		return (<div className={this.state.className} name={this.props.name}>
 			{this.state.value.map((v, i) => (<div key={i} className="validator-balance">
+				<div className="identicon"><Identicon id={v.who} size={36}/></div>
 				<div className="AccountId">{pretty(v.who)}</div>
 				<div className="Balance">{pretty(v.balance)}{
 					(v.otherBalance > 0
