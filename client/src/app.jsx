@@ -1,5 +1,7 @@
 import oo7 from 'oo7';
 import {Rspan, ReactiveComponent} from 'oo7-react';
+import CircularProgressbar from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 import React from 'react';
 import {pretty, reviver} from './polkadot.js';
 
@@ -48,6 +50,22 @@ export class WebSocketBond extends oo7.Bond {
 
 let bonds = (new WebSocketBond(reviver)).subscriptable();
 
+export class RCircularProgressbar extends ReactiveComponent {
+	constructor () {
+		super(['percentage', 'text', 'strokeWidth', 'styles', 'classes', 'counterClockwise'])
+	}
+	render () {
+		return (<CircularProgressbar
+			percentage={this.state.percentage}
+			text={this.state.text}
+			strokeWidth={this.state.strokeWidth}
+			styles={this.state.styles}
+			classes={this.state.classes}
+			counterClockwise={this.state.counterClockwise}
+		/>)
+	}
+}
+
 export class Dot extends ReactiveComponent {
 	constructor () {
 		super(["value", "className"])
@@ -85,6 +103,9 @@ export class App extends React.Component {
 		super()
 		window.bonds = bonds
 		window.pretty = pretty
+		window.danger = this.danger = oo7.Bond
+			.all([bonds.percentLate, bonds.brokenPercentLate, bonds.sessionBlocksRemaining, bonds.sessionLength])
+			.map(([a, b, c, d]) => c == 0 ? 0 : (a / b) / ((d-c) / d));
 	}
 	render() {
 		return (
@@ -94,16 +115,57 @@ export class App extends React.Component {
 				<Dot prefix="#" value={bonds.height}/>
 			</div>
 			<div className="value" id="session-blocks-remaining">
+				<div className="circular-progress">
+					<RCircularProgressbar
+						percentage={
+							oo7.Bond
+								.all([bonds.sessionBlocksRemaining, bonds.sessionLength])
+								.map(([a, b]) => Math.round(a / b * 100))
+						}
+						styles={{path: { stroke: '#1a7ba8'}}}
+						counterClockwise={true}
+						initialAnimation={false}
+					/>
+				</div>
 				<div className="label">blocks remaining in session</div>
 				<Dot value={bonds.sessionBlocksRemaining} suffix=" of "/>
 				<Dot value={bonds.sessionLength}/>
 			</div>
 			<div className="value" id="session-lateness">
+				<div className="circular-progress">
+					<RCircularProgressbar
+						percentage={
+							oo7.Bond
+								.all([bonds.percentLate, bonds.brokenPercentLate])
+								.map(([a, b]) => Math.round(a / b * 100))
+						}
+						styles={
+							this.danger.map(v => ({
+								path: { stroke: v == 0 ? '#888' : v < 0.5 ? '#50ba35' : v < 0.7 ? '#ddbc25' : v < 0.9 ? '#bc5821' : '#910000'},
+								text: { fill: '#888', fontSize: '28px' },
+							}))
+						}
+						text={this.danger.map(v => v < 0.5 ? 'low' : v < 0.7 ? 'mid' : v < 0.9 ? 'high' : '!')}
+						initialAnimation={false}
+					/>
+				</div>
 				<div className="label">session lateness</div>
 				<Dot value={bonds.percentLate.map(Math.round)} suffix="% of "/>
 				<Dot value={bonds.brokenPercentLate} suffix="%"/>
 			</div>
 			<div className="value" id="era-blocks-remaining">
+				<div className="circular-progress">
+					<RCircularProgressbar
+						percentage={
+							oo7.Bond
+								.all([bonds.eraBlocksRemaining, bonds.eraLength])
+								.map(([a, b]) => Math.round(a / b * 100))
+						}
+						styles={{path: { stroke: '#4b1aa8'}}}
+						counterClockwise={true}
+						initialAnimation={false}
+					/>
+				</div>
 				<div className="label">blocks left in current era</div>
 				<Dot value={bonds.eraBlocksRemaining} suffix=" of "/>
 				<Dot value={bonds.eraLength}/>

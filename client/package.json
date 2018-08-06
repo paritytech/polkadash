@@ -37,6 +37,7 @@
     "oo7": "^0.5.9",
     "oo7-react": "^0.4.9",
     "react": "^16.3.2",
+    "react-circular-progressbar": "^1.0.0",
     "react-dom": "^16.3.2",
     "semantic-ui-css": "^2.3.1",
     "semantic-ui-react": "^0.79.1",
