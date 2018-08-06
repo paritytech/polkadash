@@ -34,18 +34,18 @@ serveBonds({
 	codeSize: polkadot.codeSize,
 	codeHash: polkadot.codeHash.map(bytesToHex),
 	authorities: polkadot.authorities
-		.map(v => v.map(who => ({who, balance: polkadot.staking.balance(who)})), 2)
+		.map(v => v.map(who => ({who, balance: polkadot.staking.currentStakingBalance(who)})), 2)
 		.map(v => v.sort((a, b) => b.balance - a.balance)),
 	nextThreeUp: polkadot.staking.intentions.map(
 		l => ([polkadot.authorities, l.map(a => ({
-			a: a, balance: polkadot.staking.balance(a)
+			a: a, balance: polkadot.staking.stakingBalance(a)
 		}) ) ]), 3
 	).map(([c, l]) => l.sort((a, b) => b.balance - a.balance)
 	.filter(i => !c.some(x => x+'' == i.a+'')).slice(0, 3)),
 	now: polkadot.timestamp.now,
 	blockPeriod: polkadot.timestamp.blockPeriod,
 	validatorLimit: polkadot.authorities.map(who =>
-		polkadot.staking.balance(who[who.length - 1])
+		polkadot.staking.currentStakingBalance(who[who.length - 1])
 	),
 
 	sessionBlocksRemaining: polkadot.session.blocksRemaining,

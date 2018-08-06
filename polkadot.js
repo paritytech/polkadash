@@ -638,13 +638,33 @@ class Polkadot {
 			);
 
 		this.staking = {
-			balance: storageMap('sta:bal:', r => r ? deslice(r, 'T::Balance') : new Balance(0)),
+			freeBalance: storageMap('sta:bal:', r => r ? deslice(r, 'T::Balance') : new Balance(0)),
+			reservedBalance: storageMap('sta:lbo:', r => r ? deslice(r, 'T::Balance') : new Balance(0)),
 			currentEra: storageValue('sta:era', r => deslice(r, 'T::BlockNumber')),
 			sessionsPerEra: storageValue('sta:spe', r => deslice(r, 'T::BlockNumber')),
 			intentions: storageValue('sta:wil:', r => r ? deslice(r, 'Vec<AccountId>') : []),
 			lastEraLengthChange: storageValue('sta:lec', r => r ? deslice(r, 'T::BlockNumber') : 0),
-			validatorCount: storageValue('sta:vac', r => r ? deslice(r, 'u32') : 0)
+			validatorCount: storageValue('sta:vac', r => r ? deslice(r, 'u32') : 0),
+			nominatorsFor: storageMap('sta:nominators_for', r => r ? deslice(r, 'Vec<T::AccountId>') : []),
+			currentNominatorsFor: storageMap('sta:current_nominators_for', r => r ? deslice(r, 'Vec<T::AccountId>') : [])
 		};
+		this.staking.currentNominatedBalance = who => this.staking.currentNominatorsFor(who)
+			.map(ns => ns.map(n => this.staking.votingBalance(n)), 2)
+			.map(bs => new Balance(bs.reduce((a, b) => a + b, 0)))
+		this.staking.nominatedBalance = who => this.staking.nominatorsFor(who)
+			.map(ns => ns.map(n => this.staking.votingBalance(n)), 2)
+			.map(bs => new Balance(bs.reduce((a, b) => a + b, 0)))
+		this.staking.balance = who => Bond
+			.all([this.staking.freeBalance(who), this.staking.reservedBalance(who)])
+			.map(([f, r]) => new Balance(f + r));
+		this.staking.votingBalance = this.staking.balance;
+		this.staking.stakingBalance = who => Bond
+			.all([this.staking.votingBalance(who), this.staking.nominatedBalance(who)])
+			.map(([f, r]) => new Balance(f + r));
+		this.staking.currentStakingBalance = who => Bond
+			.all([this.staking.votingBalance(who), this.staking.currentNominatedBalance(who)])
+			.map(([f, r]) => new Balance(f + r));
+			
 		this.staking.eraLength = Bond
 			.all([
 				this.staking.sessionsPerEra,
@@ -654,7 +674,7 @@ class Polkadot {
 			.all([
 				this.staking.intentions.map(as => as.map(a => ({
 					who: a,
-					balance: this.staking.balance(a)
+					balance: this.staking.stakingBalance(a)
 				})), 2),
 				this.staking.validatorCount
 			]).map(([as, vc]) => as.sort((a, b) => b.balance - a.balance).slice(0, vc));
