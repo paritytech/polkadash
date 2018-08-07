@@ -1,5 +1,9 @@
 import React from 'react';
 import {ReactiveComponent} from 'oo7-react';
+import {ss58decode} from './polkadot';
+import {blake2b} from 'blakejs';
+
+const zero = blake2b(new Uint8Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]))
 
 export default class Identicon extends ReactiveComponent {
 	constructor () {
@@ -53,10 +57,12 @@ export default class Identicon extends ReactiveComponent {
 				throw "Impossible"
 			}
 			
-			let id = this.state.id
-			if (!id) {
+			if (!this.state.id) {
 				return <svg width={s} height={s}/>
 			}
+			let id = typeof this.state.id == 'string' ? ss58decode(this.state.id) : this.state.id
+			id = Array.from(blake2b(id)).map((x, i) => (x + 256 - zero[i]) % 256)
+
 			let sat = (Math.floor(id[29] * 80 / 256 + 36) % 80) + 20
 			let d = Math.floor((id[30] + id[31] * 256) % total)
 			let scheme = findScheme(d)
