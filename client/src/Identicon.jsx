@@ -34,15 +34,16 @@ export default class Identicon extends ReactiveComponent {
 			let z = s / 64 * 5
 			let schema = {
 				solid: { freq: 1, colors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1] },
-				flower: { freq: 4, colors: [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 3] },
 				asterisk: { freq: 4, colors: [0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0] },
 				cube: { freq: 16, colors: [0, 1, 3, 2, 4, 3, 0, 1, 3, 2, 4, 3, 0, 1, 3, 2, 4, 3, 5] },
 				quazar: { freq: 16, colors: [1, 2, 3, 1, 2, 4, 5, 5, 4, 1, 2, 3, 1, 2, 4, 5, 5, 4, 0] },
-				adidas: { freq: 32, colors: [0, 1, 0, 0, 1, 1, 2, 3, 2, 2, 3, 3, 4, 5, 4, 4, 5, 5, 6] },
+				flower: { freq: 16, colors: [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 3] },
+				adidas: { freq: 16, colors: [0, 1, 0, 0, 1, 1, 2, 3, 2, 2, 3, 3, 4, 5, 4, 4, 5, 5, 6] },
 				cyclic: { freq: 32, colors: [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6] },
 				vmirror: { freq: 128, colors: [0, 1, 2, 3, 4, 5, 3, 4, 2, 0, 1, 6, 7, 8, 9, 7, 8, 6, 10] },
 				hmirror: { freq: 128, colors: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 8, 6, 7, 5, 3, 4, 2, 11] }
 			}
+
 			let total = Object.keys(schema).map(k => schema[k].freq).reduce((a, b) => a + b)
 			let findScheme = d => {
 				let cum = 0
@@ -63,7 +64,7 @@ export default class Identicon extends ReactiveComponent {
 			let id = typeof this.state.id == 'string' ? ss58decode(this.state.id) : this.state.id
 			id = Array.from(blake2b(id)).map((x, i) => (x + 256 - zero[i]) % 256)
 
-			let sat = (Math.floor(id[29] * 80 / 256 + 36) % 80) + 20
+			let sat = (Math.floor(id[29] * 70 / 256 + 26) % 80) + 30
 			let d = Math.floor((id[30] + id[31] * 256) % total)
 			let scheme = findScheme(d)
 			let palette = Array.from(id).map((x, i) => {
@@ -78,7 +79,11 @@ export default class Identicon extends ReactiveComponent {
 				let l = [53, 15, 35, 75][Math.floor(b / 64)]
 				return `hsl(${h}, ${sat}%, ${l}%)`
 			})
-			let colors = scheme.colors.map(i => palette[i])
+
+			let rot = (id[28] % 6) * 3
+
+			let colors = scheme.colors.map((_, i) => palette[scheme.colors[i < 18 ? (i + rot) % 18 : 18]])
+
 			let i = 0;
 			return (<svg width={s} height={s}>
 				<circle cx={s / 2} cy={s / 2} r={s / 2} fill="#eee"/>
