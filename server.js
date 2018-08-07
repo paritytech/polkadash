@@ -48,16 +48,16 @@ serveBonds({
 			.map(i => Object.assign({balance: i.ownBalance.add(i.otherBalance)}, i))
 			.sort((a, b) => b.balance - a.balance)
 		),
-	/*nextThreeUp: polkadot.staking.intentions.map(
+	nextThreeUp: polkadot.staking.intentions.map(
 		l => ([polkadot.authorities, l.map(who => ({
 			who, ownBalance: polkadot.staking.votingBalance(who), otherBalance: polkadot.staking.nominatedBalance(who)
 		}) ) ]), 3
 	).map(([c, l]) => l
 		.map(i => Object.assign({balance: i.ownBalance.add(i.otherBalance)}, i))
 		.sort((a, b) => b.balance - a.balance)
-		.filter(i => !c.some(x => x+'' == i.a+''))
+		.filter(i => !c.some(x => x+'' == i.who+''))
 		.slice(0, 3)
-	),*/
+	),
 	now: polkadot.timestamp.now,
 	blockPeriod: polkadot.timestamp.blockPeriod,
 	validatorLimit: polkadot.authorities.map(who =>

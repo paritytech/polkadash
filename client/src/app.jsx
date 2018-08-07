@@ -182,6 +182,10 @@ export class App extends React.Component {
 				<div className="label">next validators</div>
 				<ValidatorBalances value={bonds.nextValidators}/>
 			</div>
+			<div className="big list" id="next-three-up">
+				<div className="label">next three up</div>
+				<ValidatorBalances value={bonds.nextThreeUp}/>
+			</div>
 			<div id="rest">
 				<div>
 					<div>eraSessionsRemaining: <Dot value={bonds.eraSessionsRemaining}/></div>
