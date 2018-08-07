@@ -799,5 +799,6 @@ class Polkadot {
 
 module.exports = { ss58_decode, ss58_encode, Calls, pretty, req, balanceOf, indexOf,
 	stringToSeed, stringToBytes, hexToBytes, bytesToHex, toLEHex, leHexToNumber, toLE,
-	leToNumber, Polkadot, reviver
+	leToNumber, Polkadot, reviver, AccountId, Hash, VoteThreshold, Moment, Balance,
+	BlockNumber, Tuple, Proposal, Call
 }

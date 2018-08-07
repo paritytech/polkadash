@@ -4,7 +4,7 @@ import {ReactiveComponent} from 'oo7-react';
 import CircularProgressbar from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import Identicon from './Identicon';
-import {pretty, reviver} from './polkadot.js';
+import {pretty, reviver, AccountId} from './polkadot.js';
 
 export class WebSocketBond extends oo7.Bond {
 	constructor(reviver) {
@@ -113,7 +113,7 @@ export class App extends React.Component {
 	render() {
 		return (
 			<div id="dash">
-			<div id="title"><img src="https://polkadot.network/static/media/logo.096371c0.svg"/></div>
+			<div id="title"><Identicon size='32' id={new AccountId([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])}/> <img src="https://polkadot.network/static/media/logo.096371c0.svg"/></div>
 			<div className="value" id="height">
 				<div className="label">height</div>
 				<Dot prefix="#" value={bonds.height}/>

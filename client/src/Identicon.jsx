@@ -57,15 +57,19 @@ export default class Identicon extends ReactiveComponent {
 			if (!id) {
 				return <svg width={s} height={s}/>
 			}
-			let sat = id[29] * 80 / 256 + 20
+			let sat = (Math.floor(id[29] * 80 / 256 + 36) % 80) + 20
 			let d = Math.floor((id[30] + id[31] * 256) % total)
 			let scheme = findScheme(d)
-			let palette = Array.from(id).map(b => {
+			let palette = Array.from(id).map((x, i) => {
+				let b = (x + i * 58) % 256
 				if (b == 0) {
+					return '#444'
+				}
+				if (b == 255) {
 					return 'transparent'
 				}
-				let h = b % 64 * 360 / 64
-				let l = b / 64 * 70 / 4 + 15
+				let h = Math.floor(b % 64 * 360 / 64)
+				let l = [53, 15, 35, 75][Math.floor(b / 64)]
 				return `hsl(${h}, ${sat}%, ${l}%)`
 			})
 			let colors = scheme.colors.map(i => palette[i])
