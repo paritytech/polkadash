@@ -3,8 +3,8 @@ import React from 'react';
 import {ReactiveComponent} from 'oo7-react';
 import CircularProgressbar from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import Identicon from './Identicon';
-import {pretty, reviver, AccountId} from './polkadot.js';
+import Identicon from 'polkadot-identicon';
+import {pretty, reviver, AccountId} from 'oo7-polkadot';
 
 export class WebSocketBond extends oo7.Bond {
 	constructor(reviver) {
@@ -66,7 +66,6 @@ export class RCircularProgressbar extends ReactiveComponent {
 		/>)
 	}
 }
-
 
 export class Dot extends ReactiveComponent {
 	constructor () {
@@ -190,7 +189,7 @@ export class App extends React.Component {
 				<div>
 					<div>eraSessionsRemaining: <Dot value={bonds.eraSessionsRemaining}/></div>
 					<div>activeReferenda: <Dot value={bonds.activeReferenda}/></div>
-					<div>proposedReferenda: <Dot value={bonds.proposed}/></div>
+					<div>proposedReferenda: <Dot value={bonds.proposedReferenda}/></div>
 					<div>launchPeriod: <Dot value={bonds.launchPeriod}/></div>
 					<div>minimumDeposit: <Dot value={bonds.minimumDeposit}/></div>
 					<div>votingPeriod: <Dot value={bonds.votingPeriod}/></div>

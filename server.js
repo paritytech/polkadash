@@ -1,7 +1,7 @@
 var express = require('express')
 var serveBonds = require('./ws').serveBonds
-let {Polkadot, bytesToHex} = require('./polkadot.js')
 let {Bond} = require('oo7')
+let {Polkadot, bytesToHex} = require('oo7-polkadot')
 
 let config = {};
 try {
@@ -30,7 +30,7 @@ app.listen(port, function () {
 
 process.on('unhandledRejection', error => {
 	// Will print "unhandledRejection err is not defined"
-	console.log('unhandledRejection', error.message);
+	console.log('unhandledRejection', error);
 });
 
 let polkadot = new Polkadot
@@ -79,14 +79,14 @@ serveBonds({
 	eraLength: polkadot.staking.eraLength,
 	nextValidators: polkadot.staking.nextValidators,
 
-	proposed: polkadot.democracy.proposed,
+	proposedReferenda: polkadot.democracy.proposed,
 	launchPeriod: polkadot.democracy.launchPeriod,
 	minimumDeposit: polkadot.democracy.minimumDeposit,
 	votingPeriod: polkadot.democracy.votingPeriod,
-	activeReferenda: Bond.all([polkadot.democracy.active, polkadot.height])
+	activeReferenda: polkadot.democracy.active/*Bond.all([polkadot.democracy.active, polkadot.height])
 		.map(([active, h]) =>
 			active.map(i => Object.assign({ remaining: i.ends - h }, i)
-		))
+		))*/
 }, {
-//	percentLate: 'value'
+	proposedReferenda: 'value'
 })
