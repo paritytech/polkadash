@@ -57,6 +57,7 @@ serveBonds({
 		.sort((a, b) => b.balance - a.balance)
 		.filter(i => !c.some(x => x+'' == i.who+''))
 		.slice(0, 3)
+		.filter(v => v.balance > 10000)
 	),
 	now: polkadot.timestamp.now,
 	blockPeriod: polkadot.timestamp.blockPeriod,
