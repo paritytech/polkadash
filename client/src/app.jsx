@@ -105,9 +105,9 @@ export class App extends React.Component {
 		super()
 		window.bonds = bonds
 		window.pretty = pretty
-		window.danger = this.danger = oo7.Bond
-			.all([bonds.percentLate, bonds.brokenPercentLate, bonds.sessionBlocksRemaining, bonds.sessionLength])
-			.map(([a, b, c, d]) => c == 0 ? 0 : (a / b) / ((d-c) / d));
+		this.percentLateness = oo7.Bond
+			.all([bonds.thisSessionReward, bonds.sessionReward])
+			.map(([a, b]) => Math.round(a / b * 100));
 	}
 	render() {
 		return (
@@ -137,24 +137,18 @@ export class App extends React.Component {
 			<div className="value" id="session-lateness">
 				<div className="circular-progress">
 					<RCircularProgressbar
-						percentage={
-							oo7.Bond
-								.all([bonds.percentLate, bonds.brokenPercentLate])
-								.map(([a, b]) => Math.round(a / b * 100))
-						}
+						percentage={this.percentLateness}
 						styles={
-							this.danger.map(v => ({
-								path: { stroke: v == 0 ? '#888' : v < 0.5 ? '#50ba35' : v < 0.7 ? '#ddbc25' : v < 0.9 ? '#bc5821' : '#910000'},
+							this.percentLateness.map(v => ({
+								path: { stroke: v == 0 ? '#888' : v > 0.9 ? '#50ba35' : v > 0.8 ? '#ddbc25' : v > 0.7 ? '#bc5821' : '#910000'},
 								text: { fill: '#888', fontSize: '28px' },
 							}))
 						}
-						text={this.danger.map(v => v < 0.5 ? 'low' : v < 0.7 ? 'mid' : v < 0.9 ? 'high' : '!')}
 						initialAnimation={false}
 					/>
 				</div>
-				<div className="label">session lateness</div>
-				<Dot value={bonds.percentLate.map(Math.round)} suffix="% of "/>
-				<Dot value={bonds.brokenPercentLate} suffix="%"/>
+				<div className="label">session reward</div>
+				<Dot value={bonds.thisSessionReward} suffix=" DOT"/>
 			</div>
 			<div className="value" id="era-blocks-remaining">
 				<div className="circular-progress">

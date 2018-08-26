@@ -65,6 +65,8 @@ serveBonds({
 		polkadot.staking.currentStakingBalance(who[who.length - 1])
 	),
 
+	thisSessionReward: polkadot.staking.thisSessionReward,
+	sessionReward: polkadot.staking.sessionReward,
 	sessionBlocksRemaining: polkadot.session.blocksRemaining,
 	sessionLength: polkadot.session.length,
 	percentLate: polkadot.session.percentLate,
@@ -89,5 +91,4 @@ serveBonds({
 			active.map(i => Object.assign({ remaining: i.ends - h }, i)
 		))*/
 }, {
-	proposedReferenda: 'value'
 })
