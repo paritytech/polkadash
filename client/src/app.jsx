@@ -169,7 +169,7 @@ export class App extends React.Component {
 			</div>
 			<div className="big list" id="current-validators">
 				<div className="label">current validators</div>
-				<ValidatorBalances value={bonds.authorities}/>
+				<ValidatorBalances value={bonds.validators}/>
 			</div>
 			<div className="big list" id="next-validators">
 				<div className="label">next validators</div>
