@@ -39,27 +39,9 @@ serveBonds({
 	codeSize: polkadot.codeSize,
 	codeHash: polkadot.codeHash.map(bytesToHex),
 	authorities: polkadot.consensus.authorities,
-	validators: polkadot.session.validators
-		.map(v => v.map(who => ({
-			who,
-			ownBalance: polkadot.staking.votingBalance(who),
-			otherBalance: polkadot.staking.currentNominatedBalance(who),
-			nominators: polkadot.staking.currentNominatorsFor(who)
-		})), 2)
-		.map(v => v
-			.map(i => Object.assign({balance: i.ownBalance.add(i.otherBalance)}, i))
-			.sort((a, b) => b.balance - a.balance)
-		),
-	nextThreeUp: polkadot.staking.intentions.map(
-		l => ([polkadot.session.validators, l.map(who => ({
-			who, ownBalance: polkadot.staking.votingBalance(who), otherBalance: polkadot.staking.nominatedBalance(who)
-		}) ) ]), 3
-	).map(([c, l]) => l
-		.map(i => Object.assign({balance: i.ownBalance.add(i.otherBalance)}, i))
-		.sort((a, b) => b.balance - a.balance)
-		.filter(i => !c.some(x => x+'' == i.who+''))
-		.slice(0, 3)
-	),
+	validators: polkadot.staking.validators,
+	nextThreeUp: polkadot.staking.nextThreeUp,
+	nextValidators: polkadot.staking.nextValidators,
 	now: polkadot.timestamp.now,
 	blockPeriod: polkadot.timestamp.blockPeriod,
 	validatorLimit: polkadot.session.validators.map(who =>
@@ -81,10 +63,6 @@ serveBonds({
 	eraBlocksRemaining: polkadot.staking.eraBlocksRemaining,
 	eraSessionsRemaining: polkadot.staking.eraSessionsRemaining,
 	eraLength: polkadot.staking.eraLength,
-	nextValidators: polkadot.staking.nextValidators.map(vs => vs.map(v => {
-		v.nominators = polkadot.staking.nominatorsFor(v.who);
-		return v;
-	}), 2),
 	offlineSlashGrace: polkadot.staking.offlineSlashGrace,
 	earlyEraSlash: polkadot.staking.earlyEraSlash,
 
