@@ -43,7 +43,8 @@ serveBonds({
 		.map(v => v.map(who => ({
 			who,
 			ownBalance: polkadot.staking.votingBalance(who),
-			otherBalance: polkadot.staking.currentNominatedBalance(who)
+			otherBalance: polkadot.staking.currentNominatedBalance(who),
+			nominators: polkadot.staking.currentNominatorsFor(who)
 		})), 2)
 		.map(v => v
 			.map(i => Object.assign({balance: i.ownBalance.add(i.otherBalance)}, i))
@@ -58,7 +59,6 @@ serveBonds({
 		.sort((a, b) => b.balance - a.balance)
 		.filter(i => !c.some(x => x+'' == i.who+''))
 		.slice(0, 3)
-		.filter(v => v.balance > 10000)
 	),
 	now: polkadot.timestamp.now,
 	blockPeriod: polkadot.timestamp.blockPeriod,
@@ -81,7 +81,10 @@ serveBonds({
 	eraBlocksRemaining: polkadot.staking.eraBlocksRemaining,
 	eraSessionsRemaining: polkadot.staking.eraSessionsRemaining,
 	eraLength: polkadot.staking.eraLength,
-	nextValidators: polkadot.staking.nextValidators,
+	nextValidators: polkadot.staking.nextValidators.map(vs => vs.map(v => {
+		v.nominators = polkadot.staking.nominatorsFor(v.who);
+		return v;
+	}), 2),
 	offlineSlashGrace: polkadot.staking.offlineSlashGrace,
 	earlyEraSlash: polkadot.staking.earlyEraSlash,
 
