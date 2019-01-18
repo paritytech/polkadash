@@ -26,7 +26,7 @@
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-ws": "^4.0.1",
     "oo7": "^0.7.7",
-    "oo7-substrate": "^0.4.1",
+    "oo7-substrate": "^0.4.4",
     "ss58": "^1.0.2",
     "ws": "^6.1.2",
     "xxhashjs": "^0.2.2"

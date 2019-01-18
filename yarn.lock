@@ -449,10 +449,10 @@ on-finished@~2.3.0:
   dependencies:
     ee-first "1.1.1"
 
-oo7-substrate@^0.4.1:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/oo7-substrate/-/oo7-substrate-0.4.3.tgz#4e7705406d83df04d7c6b9072c88a5dacd7cdb16"
-  integrity sha512-GKG96i96Gfbbur+M/Sgm+SiNGTQu2+5Eo+wOXZ+9Eql+mU/gmNdYNCi4VkwvEta/aeEMKfaq0yF+WxmDUQ2Pew==
+oo7-substrate@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/oo7-substrate/-/oo7-substrate-0.4.4.tgz#39869d59e455771340b51dc339fe209d24b2ba35"
+  integrity sha512-ivwqc1Ga4CkeViZmv/K5SU8DPBNWzoaVrPG26TtJ9T5QaLmz0IIghtUhoxR+VZ9iHp3ht3J2wdH0iufJtyK2aQ==
   dependencies:
     base-x "^3.0.4"
     bip39 "^2.5.0"
