@@ -25,8 +25,8 @@
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
-    "webpack": "^4.5.0",
-    "webpack-cli": "^2.0.14"
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1"
   },
   "dependencies": {
     "blakejs": "^1.1.0",
@@ -34,10 +34,10 @@
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
     "isomorphic-fetch": "^2.2.1",
-    "oo7": "^0.5.9",
-    "oo7-polkadot": "^1.0.13",
-    "oo7-react": "^0.4.9",
-    "polkadot-identicon": "^1.1.0",
+    "oo7": "^0.7.7",
+    "oo7-react": "^0.8.8",
+    "oo7-substrate": "^0.3.20",
+    "polkadot-identicon": "^1.1.21",
     "react": "^16.3.2",
     "react-circular-progressbar": "^1.0.0",
     "react-dom": "^16.3.2",

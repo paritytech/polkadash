@@ -111,3 +111,8 @@ html,body {
 .identicon {
 	float: left;
 }
+
+.invulnerable {
+	box-shadow: 0 0 6px 2px #444488;
+    border-radius: 50%;
+}

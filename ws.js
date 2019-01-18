@@ -46,7 +46,13 @@ function serveBonds(servedBonds, debugBonds = {}) {
 	Object.keys(servedBonds)
 		.forEach((key, i) => {
 			let b = servedBonds[key]
-			b.notify(() => notify(key, i, b._ready, b._value))
+			if (b) {
+				b.notify(() => {
+					notify(key, i, b._ready, b._value)
+				})
+			} else {
+				console.log("Not a Bond: ", key, b)
+			}
 		})
 
 	wss.on('connection', function (ws) {

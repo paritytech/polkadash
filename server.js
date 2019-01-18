@@ -1,7 +1,8 @@
 var express = require('express')
 var serveBonds = require('./ws').serveBonds
 let {Bond} = require('oo7')
-let {Polkadot, bytesToHex} = require('oo7-polkadot')
+WebSocket = require('ws')
+let {runtime, chain, system, bytesToHex, initRuntime} = require('oo7-substrate')
 
 let config = {};
 try {
@@ -33,47 +34,55 @@ process.on('unhandledRejection', error => {
 	console.log('unhandledRejection', error);
 });
 
-let polkadot = new Polkadot
-serveBonds({
-	height: polkadot.height,
-	codeSize: polkadot.codeSize,
-	codeHash: polkadot.codeHash.map(bytesToHex),
-	authorities: polkadot.consensus.authorities,
-	validators: polkadot.staking.validators,
-	nextThreeUp: polkadot.staking.nextThreeUp,
-	nextValidators: polkadot.staking.nextValidators,
-	now: polkadot.timestamp.now,
-	blockPeriod: polkadot.timestamp.blockPeriod,
-	validatorLimit: polkadot.session.validators.map(who =>
-		polkadot.staking.currentStakingBalance(who[who.length - 1])
-	),
+initRuntime(() => {
+	serveBonds({
+		height: chain.height,
+		finalisedHeight: chain.finalisedHeight,
+		lag: chain.lag,
+		chainName: system.chain,
+		clientVersion: system.version,
+		runtimeVersion: runtime.version,
+		codeSize: runtime.core.codeSize,
+		codeHash: runtime.core.codeHash.map(bytesToHex),
+		authorities: runtime.core.authorities,
+		validators: runtime.staking.validators,
+		nextThreeUp: runtime.staking.nextThreeUp,
+		nextValidators: runtime.staking.nextValidators,
+		now: runtime.timestamp.now,
+		blockPeriod: runtime.timestamp.blockPeriod,
+		validatorLimit: runtime.session.validators.map(who =>
+			runtime.staking.currentStakingBalance(who[who.length - 1])
+		),
 
-	thisSessionReward: polkadot.staking.thisSessionReward,
-	sessionReward: polkadot.staking.sessionReward,
-	sessionBlocksRemaining: polkadot.session.blocksRemaining,
-	sessionLength: polkadot.session.length,
-	percentLate: polkadot.session.percentLate,
-	brokenPercentLate: polkadot.session.brokenPercentLate,
-	currentIndex: polkadot.session.currentIndex,
-	currentStart: polkadot.session.currentStart,
-	lastLengthChange: polkadot.session.lastLengthChange,
+		thisSessionReward: runtime.staking.thisSessionReward,
+		sessionReward: runtime.staking.sessionReward,
+		sessionBlocksRemaining: runtime.session.blocksRemaining,
+		sessionLength: runtime.session.sessionLength,
+		percentLate: runtime.session.percentLate,
+		currentIndex: runtime.session.currentIndex,
+		currentStart: runtime.session.currentStart,
+		lastLengthChange: runtime.session.lastLengthChange,
 
-	sessionsPerEra: polkadot.staking.sessionsPerEra,
-	currentEra: polkadot.staking.currentEra,
-	eraBlocksRemaining: polkadot.staking.eraBlocksRemaining,
-	eraSessionsRemaining: polkadot.staking.eraSessionsRemaining,
-	eraLength: polkadot.staking.eraLength,
-	offlineSlashGrace: polkadot.staking.offlineSlashGrace,
-	earlyEraSlash: polkadot.staking.earlyEraSlash,
+		sessionsPerEra: runtime.staking.sessionsPerEra,
+		currentEra: runtime.staking.currentEra,
+		eraBlocksRemaining: runtime.staking.eraBlocksRemaining,
+		eraSessionsRemaining: runtime.staking.eraSessionsRemaining,
+		eraLength: runtime.staking.eraLength,
+		offlineSlashGrace: runtime.staking.offlineSlashGrace,
 
-	proposedReferenda: polkadot.democracy.proposed,
-	launchPeriod: polkadot.democracy.launchPeriod,
-	minimumDeposit: polkadot.democracy.minimumDeposit,
-	votingPeriod: polkadot.democracy.votingPeriod,
-	activeReferenda: polkadot.democracy.active/*Bond.all([polkadot.democracy.active, polkadot.height])
-		.map(([active, h]) =>
-			active.map(i => Object.assign({ remaining: i.ends - h }, i)
-		))*/
-}, {
-	authorities: 'value'
+		launchPeriod: runtime.democracy.launchPeriod,
+		minimumDeposit: runtime.democracy.minimumDeposit,
+		votingPeriod: runtime.democracy.votingPeriod,
+//		proposedReferenda: runtime.democracy.proposed,
+//		activeReferenda: runtime.democracy.active
+		/*Bond.all([polkadot.democracy.active, polkadot.height])
+			.map(([active, h]) =>
+				active.map(i => Object.assign({ remaining: i.ends - h }, i)
+			))*/
+	}, {
+		authorities: 'value'
+	})
 })
+
+global.runtime = runtime
+global.chain = chain

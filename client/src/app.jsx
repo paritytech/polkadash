@@ -4,7 +4,7 @@ import {ReactiveComponent} from 'oo7-react';
 import CircularProgressbar from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import Identicon from 'polkadot-identicon';
-import {pretty, reviver, AccountId} from 'oo7-polkadot';
+import {pretty, reviver, AccountId, setNetworkDefault, denominationInfo} from 'oo7-substrate';
 
 export class WebSocketBond extends oo7.Bond {
 	constructor(reviver) {
@@ -35,9 +35,9 @@ export class WebSocketBond extends oo7.Bond {
 				that.trigger(o)
 			}
 			if (that.reconnect) {
-				window.clearTimeout(that.reconnect)
+				clearTimeout(that.reconnect)
 			}
-			that.reconnect = window.setTimeout(() => {
+			that.reconnect = setTimeout(() => {
 				that.ws.close()
 				delete that.ws
 				that.start()
@@ -50,6 +50,40 @@ export class WebSocketBond extends oo7.Bond {
 }
 
 let bonds = (new WebSocketBond(reviver)).subscriptable();
+
+setNetworkDefault(42)
+
+const denominationInfoDOT = {
+	denominations: {
+		dot: 15,
+		point: 12,
+		µdot: 9,
+	},
+	primary: 'dot',
+	unit: 'planck',
+	ticker: 'DOT'
+}
+
+const denominationInfoCHR = {
+	denominations: {
+		chr: 15,
+	},
+	primary: 'chr',
+	unit: 'cherry',
+	ticker: 'CHR'
+}
+
+setTimeout(() => {
+	bonds.chainName.tie(name => {
+		if (name) {
+			switch (name) {
+				case 'Alexander': { denominationInfo.init(denominationInfoDOT); break; }
+				case 'Charred Cherry': { denominationInfo.init(denominationInfoCHR); break; }
+			}
+		}
+	}),
+	0
+})
 
 export class RCircularProgressbar extends ReactiveComponent {
 	constructor () {
@@ -72,7 +106,7 @@ export class Dot extends ReactiveComponent {
 		super(["value", "className"])
 	}
 	render() {
-		return (<span className={this.state.className} name={this.props.name}>
+		return (<span className={this.state.className} name={this.props.name} style={this.props.style}>
 			{(this.props.prefix || '') + pretty(this.state.value) + (this.props.suffix || '')}
 		</span>)
 	}
@@ -86,8 +120,8 @@ export class ValidatorBalances extends ReactiveComponent {
 		if (!this.state.value) return (<div/>)
 		return (<div className={this.state.className || 'validator-balances'} name={this.props.name}>
 			{this.state.value.map((v, i) => (<div key={i} className="validator-balance">
-				<div className="validator"><Identicon id={v.who} size={52}/></div>
-				<div className="nominators">{v.nominators ? v.nominators.map(a => <Identicon id={a} size={24}/>) : null}</div>
+				<div className="validator"><Identicon account={v.who} size={52} className={v.invulnerable ? 'invulnerable' : ''}/></div>
+				<div className="nominators">{v.nominators ? v.nominators.map(a => <Identicon account={a} size={24}/>) : null}</div>
 				<div className="AccountId">{pretty(v.who).substr(0, 8) + '…'}</div>
 				<div className="Balance">{pretty(v.balance)}</div>
 				{
@@ -114,10 +148,16 @@ export class App extends React.Component {
 	render() {
 		return (
 			<div id="dash">
-			<div id="title"><Identicon size='32' id={new AccountId([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])}/> <img src="https://polkadot.network/static/media/logo.096371c0.svg"/></div>
+			<div id="title">
+				<Identicon size='32' account={new AccountId([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])}/> <img src="https://polkadot.network/static/media/logo.096371c0.svg"/>
+				<span style={{marginLeft: '3em'}}>
+					<Dot style={{border: '1em', color: '#444'}} value={bonds.runtimeVersion.map(v => `${v.specName}-${v.specVersion}`)}/>
+					<Dot prefix=' running on v' style={{border: '1em', color: '#888'}} value={bonds.clientVersion}/>
+				</span>
+			</div>
 			<div className="value" id="height">
 				<div className="label">height</div>
-				<Dot prefix="#" value={bonds.height}/>
+				<Dot prefix="#" value={bonds.finalisedHeight}/><Dot prefix=' + ' value={bonds.lag} style={{color: '#888'}}/>
 			</div>
 			<div className="value" id="session-blocks-remaining">
 				<div className="circular-progress">
@@ -184,11 +224,9 @@ export class App extends React.Component {
 			<div id="rest">
 				<div>
 					<div>eraSessionsRemaining: <Dot value={bonds.eraSessionsRemaining}/></div>
-					<div>activeReferenda: <Dot value={bonds.activeReferenda}/></div>
-					<div>proposedReferenda: <Dot value={bonds.proposedReferenda}/></div>
-					<div>launchPeriod: <Dot value={bonds.launchPeriod}/></div>
 					<div>minimumDeposit: <Dot value={bonds.minimumDeposit}/></div>
 					<div>votingPeriod: <Dot value={bonds.votingPeriod}/></div>
+					<div>launchPeriod: <Dot value={bonds.launchPeriod}/></div>
 				</div>
 				<div>
 					<div>blockPeriod: <Dot value={bonds.blockPeriod}/></div>
@@ -202,6 +240,8 @@ export class App extends React.Component {
 	}
 }
 /*
+					<div>activeReferenda: <Dot value={bonds.activeReferenda}/></div>
+					<div>proposedReferenda: <Dot value={bonds.proposedReferenda}/></div>
 			<div>
 				<div>Chain: <div style={{marginLeft: '1em'}}>
 					<div>Code: <Rspan>{bonds.codeSize}</Rspan> bytes (<Rspan>{bonds.codeHash}</Rspan>)</div>
