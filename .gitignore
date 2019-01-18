@@ -50,3 +50,5 @@ client/dist/*.ttf
 client/dist/bundle.js
 
 config.json
+
+.vscode

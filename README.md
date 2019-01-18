@@ -14,24 +14,24 @@ The client is a basic Bonds + React application which uses `WebsocketBond` to su
 
 ## Install
 
-To install, ensure you use `npm i` in both the server (top level directory) and client (under `client/`):
+To install, ensure you use `yarn install` in both the server (top level directory) and client (under `client/`):
 
 ```sh
-npm i && cd client npm i
+yarn install && cd client && yarn install
 ```
 
 ## Development
 
-To develop, run `npm run dev` in both the top-level directory and the `client/` subdirectory. In one terminal keep the client bundle up to date:
+To develop, run `yarn run dev` in both the top-level directory and the `client/` subdirectory. In one terminal keep the client bundle up to date:
 
 ```sh
-$ cd client && npm run dev
+$ cd client && yarn run dev
 ```
 
 Then in another, keep the server up to date:
 
 ```sh
-$ npm run dev
+$ yarn run dev
 ``` 
 
 Finally, open your browser (the default port to serve the page from is 3000):
@@ -52,9 +52,11 @@ The port on which the page is served is 3000 by default. To change it to e.g. 80
 
 The Websockets connection is hard-coded to be 40510. Ensure this port and the previous are both open on your server.
 
-Finally, just run `npm start`. This will build the client bundle once and then run the server:
+Finally, just run `yarn start`. This will build the client bundle once and then run the server:
 
 ```sh
-$ npm start
+$ yarn start
 ```
+
+You might need to prefix that with `sudo` if you're attempting to serve for port 80 and you're not running with `root`.
 
