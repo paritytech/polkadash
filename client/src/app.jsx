@@ -140,7 +140,12 @@ export class ValidatorBalances extends ReactiveComponent {
 
 export class App extends React.Component {
 	constructor () {
-	console.log(schnorrkel)
+		
+		setTimeout(function() {
+			console.log(schnorrkel)
+			
+			window.sch = schnorrkel
+		}, 2000)
 		super()
 		window.bonds = bonds
 		window.pretty = pretty
