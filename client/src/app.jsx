@@ -6,6 +6,8 @@ import 'react-circular-progressbar/dist/styles.css';
 import Identicon from 'polkadot-identicon';
 import {pretty, reviver, AccountId, setNetworkDefault, denominationInfo} from 'oo7-substrate';
 
+import * as schnorrkel from "@parity/schnorrkel-js/schnorrkel.wp";
+
 export class WebSocketBond extends oo7.Bond {
 	constructor(reviver) {
 		super();
@@ -138,6 +140,7 @@ export class ValidatorBalances extends ReactiveComponent {
 
 export class App extends React.Component {
 	constructor () {
+	console.log(schnorrkel)
 		super()
 		window.bonds = bonds
 		window.pretty = pretty

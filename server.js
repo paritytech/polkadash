@@ -17,13 +17,18 @@ let port = config.port || 3000;
 let serveFiles = {
 	'': 'index.html',
 	'bundle.js': 'bundle.js',
-	'styles.css': 'styles.css'
+	'styles.css': 'styles.css',
+	'schnorrkel_js_bg.wasm': 'schnorrkel_js_bg.wasm'
 }
 
-Object.keys(serveFiles).forEach(k =>
-	app.get('/' + k, (req, res) => 
+Object.keys(serveFiles).forEach(k => {
+	app.get('/' + k, (req, res) => {
+		if (k.includes('.wasm')) {
+			res.setHeader("content-type", "application/wasm")
+		}
 		res.sendFile(__dirname + '/client/dist/' + serveFiles[k])
-	)
+	})
+}
 )
 app.listen(port, function () {
 	console.log(`Listening on port ${port}!`)
