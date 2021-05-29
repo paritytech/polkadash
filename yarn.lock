@@ -449,10 +449,10 @@ on-finished@~2.3.0:
   dependencies:
     ee-first "1.1.1"
 
-oo7-substrate@^0.4.9:
-  version "0.4.9"
-  resolved "https://registry.yarnpkg.com/oo7-substrate/-/oo7-substrate-0.4.9.tgz#3dca22b3452dc01c402bc729574372051a93beab"
-  integrity sha512-+P/esueHy9Jl5t00Hj3R4trp21cXYoiDEWHDHu8N2o+PcyRn9CkWm1YlFYJhmbHivo1H5BltzySuCpwRyRJBHQ==
+oo7-substrate@^0.4.13:
+  version "0.4.13"
+  resolved "https://registry.yarnpkg.com/oo7-substrate/-/oo7-substrate-0.4.13.tgz#e56e473b7b184f916fbc43dec4f13ec56c390d5f"
+  integrity sha512-Fyh7fX8MohsfLsLVJCzZU0kTTmHaWoMPrddYDGwsUfUSz8PJpNPYv9JeGKglRBbzSvQAyBejyeMD7SKvSDhpGg==
   dependencies:
     base-x "^3.0.4"
     bip39 "^2.5.0"
@@ -732,6 +732,11 @@ ws@^6.1.2:
   integrity sha512-rfUqzvz0WxmSXtJpPMX2EeASXabOrSMk1ruMOV3JBTBjo4ac2lDjGGsbQSyxj8Odhw5fBib8ZKEjDNvgouNKYw==
   dependencies:
     async-limiter "~1.0.0"
+
+ws@^7.4.6:
+  version "7.4.6"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.6.tgz#5654ca8ecdeee47c33a9a4bf6d28e2be2980377c"
+  integrity sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==
 
 xxhashjs@^0.2.2:
   version "0.2.2"
